@@ -173,7 +173,7 @@ const MENU_DATA = [
     { id:"sal7", photo:"img/salads/cezar.jpg",  name:"Цезар",     price:8.61, weight:"530 г", desc:"Зелена салата, краставица, домат, пилешко филе, крутони, млечен дресинг и пармезан.", nut:{kcal:488,p:25,c:49,f:21}, smallSize:{ weight:"330 г", price:6.45 } },
     { id:"sal8", photo:"img/salads/bulgur.jpg",  name:"Булгур",    price:7.43, weight:"450 г", desc:"Краставица, булгур, морков, чушка, пресен лук, магданоз, копър и сирене с млечен дресинг.", nut:{kcal:428,p:19,c:36,f:24}, smallSize:{ weight:"300 г", price:6.45 } },
     { id:"sal9", photo:"img/salads/riba-ton.jpg",  name:"Риба тон",  price:8.21, weight:"480 г", desc:"Морков, зелена салата, авокадо, домат, яйце, риба тон и копър.", nut:{kcal:257,p:22,c:35,f:10}, smallSize:{ weight:"320 г", price:6.45 } },
-    { id:"sal10", photo:"img/salads/amerikano.jpg", name:"Американо", price:8.21, weight:"480 г", desc:"Зелен боб, бекон, зелена салата, пресен лук, пармезан, яйце, дресинг горчица и крутони.", nut:{kcal:576,p:22,c:44,f:32}, nutNote:"калориите са без дресинг", smallSize:{ weight:"320 г", price:6.45 } },
+    { id:"sal10", photo:"img/salads/amerikano.jpg", name:"Американо", price:8.61, weight:"480 г", desc:"Зелен боб, бекон, зелена салата, пресен лук, пармезан, яйце, дресинг горчица и крутони.", nut:{kcal:576,p:22,c:44,f:32}, nutNote:"калориите са без дресинг", smallSize:{ weight:"320 г", price:6.45 } },
     { id:"sal11", photo:"img/salads/zasita.jpg", name:"Засита",    price:9.39, weight:"520 г", desc:"Моцарела, домат, спанак, нахут, магданоз, шунка, морков и гъби.", nut:{kcal:477,p:35,c:43,f:22}, smallSize:{ weight:"320 г", price:7.43 } },
     { id:"sal12", photo:"img/salads/zdrave.jpg", name:"Здраве",    price:8.21, weight:"450 г", desc:"Спанак, цвекло, авокадо, зелена ябълка, домат и сусам.", nut:{kcal:387,p:10,c:47,f:19}, smallSize:{ weight:"300 г", price:6.45 } },
     { id:"sal13", photo:"img/salads/zelena.jpg", name:"Зелена",    price:8.21, weight:"400 г", desc:"Спанак, зелена ябълка, краставица, чушка, авокадо, копър и магданоз.", nut:{kcal:355,p:10,c:40,f:19}, smallSize:{ weight:"250 г", price:6.45 } },
@@ -195,24 +195,24 @@ const MENU_DATA = [
   ]},
 
   { category:"Бургери", icon:"🍔", items:[
-    { id:"bur1", name:"Бургер „Класик“",       price:7.63, photo:"img/burgers/klasik.jpg", desc:"Пълнозърнесто хлебче, пилешко филе, зелена салата, домат, краставица, чедър и млечен сос.", nut:{kcal:610,p:33,c:73,f:18.5} },
-    { id:"bur2", name:"Веган бургер",          price:7.04, photo:"img/burgers/vegan.jpg", desc:"Пълнозърнесто хлебче, хумус, домат, краставица, печена чушка и маслини.", nut:{kcal:736,p:28,c:109,f:18} },
-    { id:"bur3", name:"Цветен бургер",         price:8.61, photo:"img/burgers/tsveten.jpg", desc:"Пълнозърнесто хлебче, шунка, домат, босилеково песто, царевица, морков и ементал.", nut:{kcal:605,p:27,c:79,f:16} },
-    { id:"bur4", name:"Бургер с риба тон",     price:7.63, photo:"img/burgers/riba-ton.jpg", desc:"Пълнозърнесто хлебче, риба тон, зелена салата, краставица, маслини, ементал и млечен сос.", nut:{kcal:611,p:27,c:73,f:18.5} },
-    { id:"bur5", name:"Бургер „Детски спомен“",price:7.04, photo:"img/burgers/detski-spomen.jpg", desc:"Пълнозърнесто хлебче, магданозено песто, сирене, печена чушка, домат, краставица и поръска от пресен лук.", nut:{kcal:587,p:22,c:77,f:17} },
-    { id:"bur6", name:"Сладък бургер",         price:7.04, photo:"img/burgers/sladak-burger.jpg", desc:"Пълнозърнесто хлебче със сусамов тахан, ябълка, мед, тиквено семе и канела.", nut:{kcal:638,p:13,c:70,f:36} },
+    { id:"bur1", name:"Бургер „Класик“",       price:7.63, photo:"img/burgers/klasik.jpg", desc:"Пълнозърнесто хлебче, пилешко филе, зелена салата, домат, краставица, чедър и млечен сос.", nut:{kcal:430,p:26,c:38,f:18} },
+    { id:"bur2", name:"Веган бургер",          price:7.04, photo:"img/burgers/vegan.jpg", desc:"Пълнозърнесто хлебче, хумус, домат, краставица, печена чушка и маслини.", nut:{kcal:380,p:14,c:46,f:14} },
+    { id:"bur3", name:"Цветен бургер",         price:8.61, photo:"img/burgers/tsveten.jpg", desc:"Пълнозърнесто хлебче, шунка, домат, босилеково песто, царевица, морков и ементал.", nut:{kcal:440,p:20,c:40,f:20} },
+    { id:"bur4", name:"Бургер с риба тон",     price:7.63, photo:"img/burgers/riba-ton.jpg", desc:"Пълнозърнесто хлебче, риба тон, зелена салата, краставица, маслини, ементал и млечен сос.", nut:{kcal:420,p:25,c:36,f:17} },
+    { id:"bur5", name:"Бургер „Детски спомен“",price:7.04, photo:"img/burgers/detski-spomen.jpg", desc:"Пълнозърнесто хлебче, магданозено песто, сирене, печена чушка, домат, краставица и поръска от пресен лук.", nut:{kcal:390,p:14,c:42,f:18} },
+    { id:"bur6", name:"Сладък бургер",         price:7.04, photo:"img/burgers/sladak-burger.jpg", desc:"Пълнозърнесто хлебче със сусамов тахан, ябълка, мед, тиквено семе и канела.", nut:{kcal:410,p:9,c:56,f:16} },
   ]},
 
   { category:"Десерти", icon:"🍓", items:[
-    { id:"des1", name:"Кисело мляко с чия и плодове",            price:4.89, weight:"300 г", photo:"img/desserts/kiselo-mliako-chia.jpg", desc:"Кисело мляко, чия и свежи сезонни плодове.", nut:{kcal:188,p:10,c:11,f:11} },
-    { id:"des2", name:"Гръцки йогурт с боровинки и фурми",       price:5.87, weight:"300 г", photo:"img/desserts/grazki-yogurt.jpg", desc:"Йогурт, сушени боровинки, фурми и хрупкаво мюсли.", nut:{kcal:264,p:8,c:28,f:14}, nutNote:"калориите са без мюслите" },
-    { id:"des3", name:"Лимонено изкушение",                      price:6.06, weight:"200 г", photo:"img/desserts/limoneno-izkushenie.jpg", desc:"Лимонов сок, лайм, мляко, маскарпоне, лимонова кора и бисквити.", nut:{kcal:752,p:19,c:77,f:45} },
-    { id:"des4", name:"Житно-плодова салата",                    price:5.09, weight:"200 г", photo:"img/desserts/zhitno-plodova.jpg", desc:"Сварено жито, ябълки, стафиди, орехи, портокалова кора и канела.", nut:{kcal:431,p:8,c:67,f:17} },
-    { id:"des5", name:"Пудинг с тиква",                          price:5.87, weight:"200 г", photo:"img/desserts/puding-tikva.jpg", desc:"Тиква, захар, крема сирене, канела и чаени бисквити. *Сезонен.", nut:{kcal:292,p:5,c:46,f:61} },
-    { id:"des6", name:"Кокосови бонбони",                        price:6.85, weight:"12 бр.", photo:"img/desserts/kokosovi-bonboni.jpg", desc:"Кокосови стърготини, кокосово мляко, кокосово масло, кондензирано мляко и ванилия.", nut:{kcal:552,p:12,c:48,f:36} },
-    { id:"des7", name:"Мус с банан и чия",                       price:5.87, weight:"200 г", photo:"img/desserts/mus-banan-chia.jpg", desc:"Банан, чия, кокосово мляко, черен шоколад, стевия и кокосови стърготини.", nut:{kcal:344,p:5,c:31,f:27} },
-    { id:"des8", name:"Шоколадови трюфели",                      price:7.04, weight:"12 бр., кутия", photo:"img/desserts/shokoladovi-tryufeli.jpg", desc:"Орехови ядки, стафиди, кокосово мляко, черен шоколад, какаови бисквити и кокосово масло.", nut:{kcal:552,p:7,c:60,f:36} },
-    { id:"des9", name:"Лятна хармония",                          price:6.26, weight:"200 г", photo:"img/desserts/harmonia.jpg", desc:"Скир, маскарпоне, фурми, кокосови стърготини, мед, ванилия и сезонни плодове.", nut:{kcal:620,p:14,c:45,f:42} },
+    { id:"des1", name:"Кисело мляко с чия и плодове",            price:5.87, weight:"300 г", photo:"img/desserts/kiselo-mliako-chia.jpg", desc:"Кисело мляко, чия и свежи сезонни плодове.", nut:{kcal:188,p:10,c:11,f:11} },
+    { id:"des2", name:"Гръцки йогурт с боровинки и фурми",       price:6.85, weight:"300 г", photo:"img/desserts/grazki-yogurt.jpg", desc:"Йогурт, сушени боровинки, фурми и хрупкаво мюсли.", nut:{kcal:264,p:8,c:28,f:14}, nutNote:"калориите са без мюслите" },
+    { id:"des3", name:"Лимонено изкушение",                      price:6.85, weight:"200 г", photo:"img/desserts/limoneno-izkushenie.jpg", desc:"Лимонов сок, лайм, мляко, маскарпоне, лимонова кора и бисквити.", nut:{kcal:752,p:19,c:77,f:45} },
+    { id:"des4", name:"Житно-плодова салата",                    price:5.87, weight:"200 г", photo:"img/desserts/zhitno-plodova.jpg", desc:"Сварено жито, ябълки, стафиди, орехи, портокалова кора и канела.", nut:{kcal:431,p:8,c:67,f:17} },
+    { id:"des5", name:"Пудинг с тиква",                          price:6.85, weight:"200 г", photo:"img/desserts/puding-tikva.jpg", desc:"Тиква, захар, крема сирене, канела и чаени бисквити. *Сезонен.", nut:{kcal:292,p:5,c:46,f:61} },
+    { id:"des6", name:"Кокосови бонбони",                        price:7.82, weight:"12 бр.", photo:"img/desserts/kokosovi-bonboni.jpg", desc:"Кокосови стърготини, кокосово мляко, кокосово масло, кондензирано мляко и ванилия.", nut:{kcal:552,p:12,c:48,f:36} },
+    { id:"des7", name:"Мус с банан и чия",                       price:6.85, weight:"200 г", photo:"img/desserts/mus-banan-chia.jpg", desc:"Банан, чия, кокосово мляко, черен шоколад, стевия и кокосови стърготини.", nut:{kcal:344,p:5,c:31,f:27} },
+    { id:"des8", name:"Шоколадови трюфели",                      price:7.82, weight:"12 бр., кутия", photo:"img/desserts/shokoladovi-tryufeli.jpg", desc:"Орехови ядки, стафиди, кокосово мляко, черен шоколад, какаови бисквити и кокосово масло.", nut:{kcal:552,p:7,c:60,f:36} },
+    { id:"des9", name:"Лятна хармония",                          price:6.85, weight:"200 г", photo:"img/desserts/harmonia.jpg", desc:"Скир, маскарпоне, фурми, кокосови стърготини, мед, ванилия и сезонни плодове.", nut:{kcal:620,p:14,c:45,f:42} },
   ]},
 
   { category:"Смути", icon:"🥤", items:[
@@ -239,31 +239,31 @@ const MENU_DATA = [
   ]},
 
   { category:"Фреш", icon:"🍊", items:[
-    { id:"fr1", name:"Портокал", desc:"Прясно изцеден портокалов сок.", photo:"img/Juice/Orange.jpeg",
+    { id:"fr1", name:"Портокал", desc:"Прясно изцеден портокалов сок.",
       sizes:[
         { label:"300 мл.", price:4.50,  nut:{kcal:126,p:2,c:28,f:0} },
         { label:"500 мл.", price:6.45,  nut:{kcal:210,p:3,c:47,f:0}, isDefault:true },
         { label:"1 л.",    price:13.10, nut:{kcal:420,p:6,c:94,f:0} },
       ] },
-    { id:"fr2", name:"Ябълка", desc:"Прясно изцеден ябълков сок.", photo:"img/Juice/Apple.jpg",
+    { id:"fr2", name:"Ябълка", desc:"Прясно изцеден ябълков сок.",
       sizes:[
         { label:"300 мл.", price:5.09,  nut:{kcal:135,p:0,c:33,f:0} },
         { label:"500 мл.", price:7.04,  nut:{kcal:225,p:0,c:55,f:0}, isDefault:true },
         { label:"1 л.",    price:14.08, nut:{kcal:450,p:0,c:110,f:0} },
       ] },
-    { id:"fr3", name:"Морков", desc:"Прясно изцеден морковен сок.", photo:"img/Juice/Carrot.jpg",
+    { id:"fr3", name:"Морков", desc:"Прясно изцеден морковен сок.",
       sizes:[
         { label:"300 мл.", price:5.09,  nut:{kcal:99,p:2,c:22,f:0} },
         { label:"500 мл.", price:7.04,  nut:{kcal:165,p:4,c:37,f:0}, isDefault:true },
         { label:"1 л.",    price:14.08, nut:{kcal:330,p:8,c:74,f:0} },
       ] },
-    { id:"fr4", name:"Грейпфрут", desc:"Прясно изцеден грейпфрутов сок.", photo:"img/Juice/Greip.jpg",
+    { id:"fr4", name:"Грейпфрут", desc:"Прясно изцеден грейпфрутов сок.",
       sizes:[
         { label:"300 мл.", price:5.48,  nut:{kcal:105,p:1,c:25,f:0} },
         { label:"500 мл.", price:7.63,  nut:{kcal:175,p:2,c:42,f:0}, isDefault:true },
         { label:"1 л.",    price:15.06, nut:{kcal:350,p:4,c:84,f:0} },
       ] },
-    { id:"fr5", name:"Фреш микс", desc:"Портокал, ябълка, морков и грейпфрут.", photo:"img/Juice/Miks.jpg",
+    { id:"fr5", name:"Фреш микс", desc:"Портокал, ябълка, морков и грейпфрут.",
       sizes:[
         { label:"300 мл.", price:5.48,  nut:{kcal:120,p:1,c:28,f:0} },
         { label:"500 мл.", price:8.02,  nut:{kcal:200,p:2,c:46,f:0}, isDefault:true },
@@ -272,9 +272,9 @@ const MENU_DATA = [
   ]},
 
   { category:"Балансирана купа зеленчуци", icon:"🍲", items:[
-    { id:"bowl1", name:"Купа с пиле",     price:8.61,  weight:"500 г", photo:"img/bowls/kupa-pile.jpg", desc:"Картофи на пара, моркови на пара, пилешко филе, маслини, пресен лук, яйце и лимонов дресинг.", nut:{kcal:386,p:26,c:37,f:7}, nutNote:"калориите са без дресинг" },
-    { id:"bowl2", name:"Купа с риба",     price:10.56, weight:"400 г", photo:"img/bowls/kupa-riba.jpg", desc:"Ориз на пара, пресен спанак, риба тон, маслини, пармезан, авокадо, яйце, копър и лимонов дресинг.", nut:{kcal:609,p:30,c:54,f:21}, nutNote:"калориите са без дресинг" },
-    { id:"bowl3", name:"Купа със сирена", price:8.80,  weight:"500 г", photo:"img/bowls/kupa-sirena.jpg", desc:"Броколи на пара, картоф на пара, нахут, кашкавал, моцарела, пресен лук, авокадо и лимонов дресинг.", nut:{kcal:761,p:45,c:53,f:44}, nutNote:"калориите са без дресинг" },
+    { id:"bowl1", name:"Купа с пиле",     price:9.00,  weight:"500 г", photo:"img/bowls/kupa-pile.jpg", desc:"Картофи на пара, моркови на пара, пилешко филе, маслини, пресен лук, яйце и лимонов дресинг.", nut:{kcal:386,p:26,c:37,f:7}, nutNote:"калориите са без дресинг" },
+    { id:"bowl2", name:"Купа с риба",     price:10.95, weight:"400 г", photo:"img/bowls/kupa-riba.jpg", desc:"Ориз на пара, пресен спанак, риба тон, маслини, пармезан, авокадо, яйце, копър и лимонов дресинг.", nut:{kcal:609,p:30,c:54,f:21}, nutNote:"калориите са без дресинг" },
+    { id:"bowl3", name:"Купа със сирена", price:9.19,  weight:"500 г", photo:"img/bowls/kupa-sirena.jpg", desc:"Броколи на пара, картоф на пара, нахут, кашкавал, моцарела, пресен лук, авокадо и лимонов дресинг.", nut:{kcal:761,p:45,c:53,f:44}, nutNote:"калориите са без дресинг" },
   ]},
 ];
 
