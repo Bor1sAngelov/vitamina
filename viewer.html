@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Преглед — Витамина</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="logo-vitamina.png" type="image/png">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo"><span class="dot"></span>Витамина</a>
+    <ul class="nav-links"></ul>
+    <div class="nav-cta"></div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ЕКРАН ЗА ВХОД -->
+  <div class="admin-login" id="viewerLoginScreen">
+    <div class="admin-card">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <h2 style="margin-bottom:6px;">Преглед (само за четене)</h2>
+      <p style="color:var(--charcoal-soft); margin-bottom:22px;">Тази страница е само за екипа на Витамина.</p>
+      <form id="viewerLoginForm">
+        <div class="field" style="text-align:left;">
+          <label for="viewerPassword">Парола</label>
+          <input type="password" id="viewerPassword" placeholder="Въведи парола" required>
+        </div>
+        <p class="form-error" id="viewerLoginError" style="display:none; color:var(--tomato); font-size:0.86rem; margin-bottom:12px;">Грешна парола. Опитай отново.</p>
+        <button type="submit" class="btn btn-primary btn-block">Вход</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛ -->
+  <div id="viewerPanel" style="display:none;">
+    <section class="page-hero">
+      <div class="container">
+        <span class="ribbon">Само за екипа · само преглед</span>
+        <h1 style="margin-top:18px;">Поръчки и прегледи на живо</h1>
+        <p>Тук виждаш всички поръчки и прегледи по страница в реално време. Тази страница не позволява промени — за действия по поръчки, кандидатури и супата на деня използвай <a href="admin.html">административния панел</a>.</p>
+        <div class="admin-bar">
+          <button class="btn btn-ghost btn-sm" id="viewerLogout">Изход</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+
+        <!-- ПОРЪЧКИ -->
+        <h3 style="margin-bottom:16px;">📦 Поръчки</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>№</th><th>Дата</th><th>Име</th><th>Телефон</th><th>Час</th><th>Продукти</th><th>Сума</th><th>Бележка</th><th>Потвърждение</th><th>Статус</th></tr>
+            </thead>
+            <tbody id="viewerOrdersTbody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="viewerOrdersEmpty">Все още няма постъпили поръчки от този браузър.</div>
+
+        <!-- ПРЕГЛЕДИ ПО СТРАНИЦА -->
+        <h3 style="margin:36px 0 16px;">👀 Прегледи по страница</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Страница</th><th>Общо прегледи</th><th>Уникални посетители</th><th>Последен преглед</th></tr>
+            </thead>
+            <tbody id="viewerPageStatsTbody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="viewerPageStatsEmpty">Зареждане на прегледите по страница...</div>
+
+        <p class="form-note" style="margin-top:30px; max-width:640px;">
+          Важно: изисква настроена споделена база (виж <code>SUPABASE_URL</code> / <code>SUPABASE_ANON_KEY</code> в <code>js/data.js</code> и <code>supabase/schema.sql</code>) — без нея тази страница показва само поръчките, направени от този браузър, и не показва прегледи по страница.
+        </p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none; padding-top:0;">
+      <span>© <span id="year"></span> Витамина — вътрешен инструмент.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

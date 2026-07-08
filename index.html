@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Витамина — Салатен бар във Враца</title>
+<meta name="description" content="Витамина е салатен бар във Враца — свежи салати, балансирани купи, бургери, фреш сокове, смутита и десерти всеки ден. Поръчай онлайн за вземане от място.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="logo-vitamina.png" type="image/png">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo"><img src="logo-vitamina.png" alt="Витамина" class="logo-img">Витамина</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Начало</a></li>
+      <li><a href="menu.html">Меню</a></li>
+      <li><a href="jobs.html">Работа при нас</a></li>
+      <li><a href="contact.html">Контакти</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="cart.html" class="cart-link" aria-label="Количка" title="Количка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H5.2"/></svg><span class="cart-badge hidden" data-cart-badge>0</span></a>
+      <button class="nav-toggle" aria-label="Меню"><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="leaf-field"></div>
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="container hero-grid">
+      <div class="reveal">
+        <span class="eyebrow">Свежо всеки ден · Враца</span>
+        <h1>Салатата не е<br><em>компромис.</em><br>Тя е избор.</h1>
+        <p class="lead">Витамина е място, където всяка купа, салата и сок се правят с прясно набрани съставки и грижа — всеки ден, специално за теб.</p>
+        <div class="hero-actions">
+          <a href="menu.html" class="btn btn-primary">Поръчай онлайн</a>
+          <a href="menu.html#menuTabs" class="btn btn-outline">Направи си сам</a>
+        </div>
+      </div>
+      <div class="hero-art reveal">
+        <div class="hero-art-frame">
+          <div class="hero-art-blob"></div>
+          <img src="cezar-salata.png" alt="Салата от Витамина" class="hero-art-img">
+          <span class="hero-art-badge">100% полезна</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOUP OF THE DAY -->
+  <section class="section-tight">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="ribbon ribbon-sm">Топло от кухнята</span>
+        <h2 style="margin-top:16px;">Супа на деня</h2>
+        <p>Всеки ден вареним нова супа — истинска, без готови бульони. Виж какво е приготвено днес.</p>
+      </div>
+      <div class="soup-card reveal" id="soupCard"><!-- попълва се от script.js --></div>
+    </div>
+  </section>
+
+  <!-- GALLERY STRIP -->
+  <section class="section-tight">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">От нашата кухня</span>
+        <h2>Момент от купата ти, преди да стигне до теб</h2>
+      </div>
+      <div class="gallery-strip reveal-stagger" id="galleryStrip"><!-- попълва се от script.js --></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section">
+    <div class="container about-grid">
+      <div class="reveal">
+        <img src="img/about/team-wall.jpg" alt="Интериорът на Витамина" class="about-photo" style="aspect-ratio:4/3.2; border-radius:24px; width:100%; object-fit:cover; display:block;">
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">За нас</span>
+        <h2>Отворихме Витамина, защото Враца заслужава истинска здравословна кухня.</h2>
+        <p style="color:var(--charcoal-soft); margin-top:16px;">Всичко тръгна от идеята, че бързата храна не трябва да означава компромис с качеството. В нашата кухня режем, печем и подправяме всеки ден — без готови миксове и без излишни добавки. Ако бързаш за обяд или искаш да ядеш по-съзнателно, тук винаги ще намериш нещо направено точно за теб.</p>
+        <div class="about-stats">
+          <div class="stat"><b>100%</b><span>Пресни съставки</span></div>
+          <div class="stat"><b>35+</b><span>Продукта в менюто</span></div>
+          <div class="stat"><b>35+</b><span>Съставки за твоята купа</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-deep">
+    <div class="container center reveal" style="max-width:640px;">
+      <span class="eyebrow" style="justify-content:center;">Готов ли си?</span>
+      <h2 style="margin-top:10px;">Направи си салата или бургер по твой вкус — ясна цена, ясни съставки.</h2>
+      <div class="hero-actions" style="justify-content:center; margin-top:26px;">
+        <a href="menu.html" class="btn btn-primary">Направи си сам</a>
+        <a href="cart.html" class="btn btn-outline" style="border-color:#fff; color:#fff;">Поръчай сега</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#fff;"><span class="dot"></span>Витамина</div>
+        <p style="margin-top:14px; max-width:32ch;">Салатен бар във Враца — свежо, всеки ден, за теб.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/vitaminasaladbar/" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram" data-contact-instagram>IG</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok" data-contact-tiktok>TT</a>
+        </div>
+      </div>
+      <div>
+        <h4>Разгледай</h4>
+        <ul class="footer-links">
+          <li><a href="menu.html">Меню</a></li>
+          <li><a href="jobs.html">Работа при нас</a></li>
+          <li><a href="contact.html">Контакти</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакт</h4>
+        <p data-contact-address>ул. „Полковник Лукашов“ 4, Враца 3000</p>
+        <p style="margin-top:8px;"><a href="tel:+359896717196" data-contact-phone-href data-contact-phone>089 671 7196</a></p>
+        <p style="margin-top:8px;" data-contact-hours>Всеки ден: 11:00 – 19:00 ч.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Витамина. Всички права запазени.</span>
+      <span style="display:flex; align-items:center; gap:14px;">Направено с грижа във Враца 🌿 <a href="admin.html" style="opacity:.4; font-size:.75rem;">•</a> <a href="viewer.html" style="opacity:.4; font-size:.75rem;">•</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

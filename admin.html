@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Администрация — Витамина</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="logo-vitamina.png" type="image/png">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo"><span class="dot"></span>Витамина</a>
+    <ul class="nav-links"></ul>
+    <div class="nav-cta"></div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ЕКРАН ЗА ВХОД -->
+  <div class="admin-login" id="adminLoginScreen">
+    <div class="admin-card">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <h2 style="margin-bottom:6px;">Административен панел</h2>
+      <p style="color:var(--charcoal-soft); margin-bottom:22px;">Тази страница е само за екипа на Витамина.</p>
+      <form id="adminLoginForm">
+        <div class="field" style="text-align:left;">
+          <label for="adminPassword">Парола</label>
+          <input type="password" id="adminPassword" placeholder="Въведи парола" required>
+        </div>
+        <p class="form-error" id="adminLoginError" style="display:none; color:var(--tomato); font-size:0.86rem; margin-bottom:12px;">Грешна парола. Опитай отново.</p>
+        <button type="submit" class="btn btn-primary btn-block">Вход</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛ -->
+  <div id="adminPanel" style="display:none;">
+    <section class="page-hero">
+      <div class="container">
+        <span class="ribbon">Само за екипа</span>
+        <h1 style="margin-top:18px;">Табло на Витамина</h1>
+        <p>Тук виждаш всички поръчки и кандидатури, направени от този браузър, и можеш да зададеш супата на деня.</p>
+        <div class="admin-bar">
+          <div class="admin-tabs">
+            <button class="menu-tab tab-btn active" data-tab="orders">📦 Поръчки</button>
+            <button class="menu-tab tab-btn" data-tab="apps">🧑‍🍳 Кандидатури</button>
+            <button class="menu-tab tab-btn" data-tab="soup">🥣 Супа на деня</button>
+            <button class="menu-tab tab-btn" data-tab="visitors">👀 Посетители</button>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="adminLogout">Изход</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+
+        <!-- ПОРЪЧКИ -->
+        <div id="tab-orders">
+          <div class="ordering-pause-bar">
+            <span class="status-pill status-done" id="orderingPauseStatus">✅ Поръчките са отворени</span>
+            <button class="btn btn-danger btn-sm" id="orderingPauseToggle">🚫 Затвори поръчките</button>
+          </div>
+          <div class="stat-row">
+            <div class="stat-card"><div class="num" id="statOrdersTotal">0</div><div class="lab">Общо поръчки</div></div>
+            <div class="stat-card"><div class="num" id="statOrdersNew">0</div><div class="lab">Нови поръчки</div></div>
+            <div class="stat-card"><div class="num" id="statOrdersDone">0</div><div class="lab">Завършени поръчки</div></div>
+          </div>
+          <div class="admin-tabs" style="margin-bottom:16px;">
+            <button class="menu-tab order-filter-btn active" data-order-filter="all">Всички</button>
+            <button class="menu-tab order-filter-btn" data-order-filter="new">● Нови</button>
+            <button class="menu-tab order-filter-btn" data-order-filter="done">✓ Завършени</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>№</th><th>Дата</th><th>Име</th><th>Телефон</th><th>Час</th><th>Продукти</th><th>Сума</th><th>Бележка</th><th>Потвърждение</th><th>Статус</th><th>Действия</th></tr>
+              </thead>
+              <tbody id="ordersTbody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="ordersEmpty">Все още няма постъпили поръчки от този браузър.</div>
+          <button class="btn btn-ghost btn-sm" id="clearOrdersBtn" style="margin-top:16px;">Изчисти всички поръчки</button>
+        </div>
+
+        <!-- КАНДИДАТУРИ -->
+        <div id="tab-apps" style="display:none;">
+          <div class="stat-row">
+            <div class="stat-card"><div class="num" id="statAppsTotal">0</div><div class="lab">Общо кандидатури</div></div>
+            <div class="stat-card"><div class="num" id="statAppsNew">0</div><div class="lab">Нови кандидатури</div></div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>Дата</th><th>Име</th><th>Телефон</th><th>Имейл</th><th>Позиция</th><th>Съобщение</th><th>Статус</th><th>Действия</th></tr>
+              </thead>
+              <tbody id="appsTbody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="appsEmpty">Все още няма постъпили кандидатури от този браузър.</div>
+          <button class="btn btn-ghost btn-sm" id="clearAppsBtn" style="margin-top:16px;">Изчисти всички кандидатури</button>
+        </div>
+
+        <!-- СУПА НА ДЕНЯ -->
+        <div id="tab-soup" style="display:none;">
+          <div class="admin-status" id="adminSoupStatus"></div>
+          <div id="soupScheduleEditor"><!-- попълва се от script.js --></div>
+        </div>
+
+        <!-- ПОСЕТИТЕЛИ -->
+        <div id="tab-visitors" style="display:none;">
+          <div class="stat-row">
+            <div class="stat-card"><div class="num" id="statVisitsTotal">0</div><div class="lab">Прегледи на сайта</div></div>
+            <div class="stat-card"><div class="num" id="statVisitsUnique">0</div><div class="lab">Уникални посетители</div></div>
+          </div>
+          <p class="form-note" id="visitorsNote" style="margin-top:10px; max-width:640px;"></p>
+          <p class="form-note" style="margin-top:10px; max-width:640px;">
+            Този брояч е тих и невидим за посетителите на сайта — не се показва никъде извън този панел. Работи в облак (споделен между всички устройства), но не изисква и не пази никакви лични данни — само общ брой прегледи и уникални посетители.
+          </p>
+        </div>
+
+        <p class="form-note" style="margin-top:30px; max-width:640px;">
+          Важно: ако не е настроена споделена база (виж <code>FIREBASE_CONFIG</code> в <code>data.js</code>), поръчките, кандидатурите и изборът на супа се пазят само в този браузър/устройство (localStorage), не в централна база данни — поръчка от телефона на клиент ще се вижда тук само ако отвориш тази страница от същото устройство. Всяка поръчка и кандидатура се изпраща и по имейл, така че нищо не се губи. За да се вижда отвсякъде, трябва малък сървър (бекенд) — мога да го направя при нужда, но е отделна, по-голяма задача.
+        </p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none; padding-top:0;">
+      <span>© <span id="year"></span> Витамина — вътрешен инструмент.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

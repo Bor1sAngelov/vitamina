@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"^:root\\\\|^\\\\.container\\\\|^/\\\\* =\" \"D:\\\\Vitamina-Sait\\\\css\\\\style.css\")",
+      "Bash(grep -n -A1 \"^/\\\\* =========\" \"D:\\\\Vitamina-Sait\\\\css\\\\style.css\")",
+      "Bash(grep -v \"^--\\\\|^[0-9]*-/\\\\* =\")",
+      "Skill(run)",
+      "Bash(python -m http.server 8811)",
+      "Bash(curl -sf http://localhost:8811/admin.html)",
+      "Bash(npx --version)",
+      "Bash(npx --yes serve -l 8811 .)",
+      "Bash(npm ls *)",
+      "Bash(npm root *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node test-admin.js)",
+      "Bash(node test-admin2.js)"
+    ]
+  }
+}

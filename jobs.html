@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кандидатствай за работа — Витамина</title>
+<meta name="description" content="Стани част от екипа на Витамина — салатен бар във Враца. Кандидатствай за работа онлайн.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="logo-vitamina.png" type="image/png">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo"><img src="logo-vitamina.png" alt="Витамина" class="logo-img">Витамина</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Начало</a></li>
+      <li><a href="menu.html">Меню</a></li>
+      <li><a href="jobs.html">Работа при нас</a></li>
+      <li><a href="contact.html">Контакти</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="cart.html" class="cart-link" aria-label="Количка" title="Количка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H5.2"/></svg><span class="cart-badge hidden" data-cart-badge>0</span></a>
+      <button class="nav-toggle" aria-label="Меню"><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container reveal">
+      <span class="ribbon">Стани част от екипа</span>
+      <h1 style="margin-top:18px;">Търсим хора, които обичат прясната храна колкото нас.</h1>
+      <p>Ако си енергичен, обичаш работата с хора и искаш да работиш в приятна атмосфера — изпрати ни кандидатурата си.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="two-col-jobs">
+
+        <div class="reveal-stagger">
+          <div class="crate" style="margin-bottom:16px;">
+            <div class="icon">🥗</div>
+            <h4>Продавач-консултант</h4>
+            <p>Приготвяне на салати, купи и напитки пред клиента.</p>
+          </div>
+          <div class="crate" style="margin-bottom:16px;">
+            <div class="icon">🧑‍🍳</div>
+            <h4>Помощник-готвач</h4>
+            <p>Подготовка на дневните ястия, супи и десерти.</p>
+          </div>
+          <div class="crate">
+            <div class="icon">🛵</div>
+            <h4>Друго</h4>
+            <p>Не откри позицията си? Пиши ни все пак — винаги търсим добри хора.</p>
+          </div>
+        </div>
+
+        <div class="form-card reveal">
+          <h3 style="margin-bottom:6px;">Формуляр за кандидатстване</h3>
+          <p style="color:var(--charcoal-soft); margin-bottom:24px;">Попълни формата — кандидатурата ти се записва и се изпраща по имейл до нашия екип по подбор.</p>
+
+          <form id="jobForm">
+            <div class="form-row">
+              <div class="field">
+                <label for="jname">Име и фамилия</label>
+                <input type="text" id="jname" name="name" placeholder="Твоето име" required>
+              </div>
+              <div class="field">
+                <label for="jphone">Телефон</label>
+                <input type="tel" id="jphone" name="phone" placeholder="+359 8..." required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="jemail">Имейл</label>
+                <input type="email" id="jemail" name="email" placeholder="[email protected]" required>
+              </div>
+              <div class="field">
+                <label for="jposition">Позиция</label>
+                <select id="jposition" name="position" required>
+                  <option value="">Избери позиция</option>
+                  <option>Салатиер / Барист</option>
+                  <option>Помощник-готвач</option>
+                  <option>Друго</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="jexp">Имаш ли опит в подобна работа?</label>
+              <input type="text" id="jexp" name="experience" placeholder="Напр. 2 години като сервитьор">
+            </div>
+
+            <div class="field">
+              <label for="jmessage">Няколко думи за теб</label>
+              <textarea id="jmessage" name="message" placeholder="Разкажи ни защо искаш да работиш при нас" required></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="jphoto">Снимка</label>
+                <input type="file" id="jphoto" name="photo" accept="image/*" required>
+                <p class="field-hint" style="margin-top:6px; font-size:0.85em; opacity:0.75;">JPG или PNG, до 5 MB.</p>
+              </div>
+              <div class="field">
+                <label for="jcv">CV файл</label>
+                <input type="file" id="jcv" name="cv" accept=".pdf,.doc,.docx" required>
+                <p class="field-hint" style="margin-top:6px; font-size:0.85em; opacity:0.75;">PDF или Word документ, до 5 MB.</p>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Изпрати кандидатура</button>
+            </div>
+            <p class="form-note">Кандидатурата ти се изпраща по имейл директно до администратор на Витамина.</p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#fff;"><span class="dot"></span>Витамина</div>
+        <p style="margin-top:14px; max-width:32ch;">Салатен бар във Враца — свежо, всеки ден, за теб.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/vitaminasaladbar/" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram" data-contact-instagram>IG</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok" data-contact-tiktok>TT</a>
+        </div>
+      </div>
+      <div>
+        <h4>Разгледай</h4>
+        <ul class="footer-links">
+          <li><a href="menu.html">Меню</a></li>
+          <li><a href="jobs.html">Работа при нас</a></li>
+          <li><a href="contact.html">Контакти</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакт</h4>
+        <p data-contact-address>ул. „Полковник Лукашов“ 4, Враца 3000</p>
+        <p style="margin-top:8px;"><a href="tel:+359896717196" data-contact-phone-href data-contact-phone>089 671 7196</a></p>
+        <p style="margin-top:8px;" data-contact-hours>Всеки ден: 11:00 – 19:00 ч.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Витамина. Всички права запазени.</span>
+      <span>Направено с грижа във Враца 🌿</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

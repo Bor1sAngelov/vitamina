@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Количка — Витамина</title>
+<meta name="description" content="Твоята количка от Витамина — салатен бар във Враца. Прегледай продуктите и изпрати поръчката си директно към екипа ни.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="logo-vitamina.png" type="image/png">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="logo"><img src="logo-vitamina.png" alt="Витамина" class="logo-img">Витамина</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Начало</a></li>
+      <li><a href="menu.html">Меню</a></li>
+      <li><a href="jobs.html">Работа при нас</a></li>
+      <li><a href="contact.html">Контакти</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="cart.html" class="cart-link" aria-label="Количка" title="Количка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H5.2"/></svg><span class="cart-badge hidden" data-cart-badge>0</span></a>
+      <button class="nav-toggle" aria-label="Меню"><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container reveal">
+      <span class="ribbon">Твоята количка</span>
+      <h1 style="margin-top:18px;">Прегледай количката и поръчай.</h1>
+      <p>Поръчката е само за вземане от обекта. Добавяй продукти от менюто или направи собствена салата/бургер — тук ще видиш всичко на едно място.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+
+      <div class="daily-banner reveal" id="dailyBanner"><!-- попълва се от script.js --></div>
+
+      <div class="two-col-cart">
+        <div class="reveal">
+          <div class="form-card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:6px;">Продукти в количката</h3>
+            <p style="color:var(--charcoal-soft); margin-bottom:20px;">Промени количествата или премахни продукт — сумата се обновява веднага.</p>
+            <div class="cart-list" id="cartList"><!-- попълва се от script.js --></div>
+            <div class="cart-empty hidden" id="cartEmpty">Количката ти е празна. <a href="menu.html" style="text-decoration:underline; color:var(--green-700); font-weight:700;">Разгледай менюто</a> и добави нещо вкусно.</div>
+            <div class="cart-summary">
+              <span>Общо</span>
+              <b><span id="cartTotal">0.00</span>&nbsp;€</b>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="clearCartBtn" style="margin-top:12px;">Изчисти количката</button>
+          </div>
+
+          <div class="form-card">
+            <h3 style="margin-bottom:6px;">Данни за поръчката</h3>
+            <p style="color:var(--charcoal-soft); margin-bottom:24px;">Попълни данните си — поръчката се записва и изпраща директно към нашия екип.</p>
+
+            <div class="hours-notice hidden" id="orderingClosedNotice"><span class="icon">🕒</span><span id="orderingClosedText"></span></div>
+
+            <form id="orderForm">
+              <div class="form-row">
+                <div class="field">
+                  <label for="name">Име</label>
+                  <input type="text" id="name" name="name" placeholder="Твоето име" required>
+                </div>
+                <div class="field">
+                  <label for="phone">Телефон</label>
+                  <input type="tel" id="phone" name="phone" placeholder="+359 8..." required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="time">Час за вземане</label>
+                  <select id="time" name="time" required>
+                    <option value="" disabled selected>Избери час</option>
+                  </select>
+                  <p class="field-hint" style="margin-top:6px; font-size:0.85em; opacity:0.75;">Поръчката се приготвя минимум 20 минути — показваме само часове, до които ще е готова.</p>
+                  <p class="form-note" style="margin-top:6px;">Приемаме поръчки само в рамките на работното време, най-късно до 15 мин. преди затваряне.</p>
+                </div>
+                <div class="field">
+                  <label for="note">Бележка (по желание)</label>
+                  <input type="text" id="note" name="note" placeholder="Алергии, предпочитания...">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="checkoutBtn">Изпрати поръчката</button>
+              </div>
+              <p class="form-note">Поръчката се изпраща директно към екипа на Витамина — потвърждение получаваш по телефон.</p>
+            </form>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="img-placeholder ph-card" style="aspect-ratio:1/1; margin-bottom:16px;">
+            <span class="ph-icon">📷</span>
+            <span class="ph-label">Снимка предстои</span>
+          </div>
+          <div class="contact-card">
+            <div class="icon">📞</div>
+            <div>
+              <h4>Обади се директно</h4>
+              <p><a href="tel:+359896717196" data-contact-phone-href data-contact-phone>089 671 7196</a></p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="icon">💬</div>
+            <div>
+              <h4>Messenger</h4>
+              <p><a href="https://m.me/vitaminasaladbar" target="_blank" rel="noopener">Пиши ни във Facebook Messenger</a></p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="icon">🕒</div>
+            <div>
+              <h4>Работно време</h4>
+              <p data-contact-hours>Всеки ден: 11:00 – 19:00 ч.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#fff;"><span class="dot"></span>Витамина</div>
+        <p style="margin-top:14px; max-width:32ch;">Салатен бар във Враца — свежо, всеки ден, за теб.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/vitaminasaladbar/" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram" data-contact-instagram>IG</a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok" data-contact-tiktok>TT</a>
+        </div>
+      </div>
+      <div>
+        <h4>Разгледай</h4>
+        <ul class="footer-links">
+          <li><a href="menu.html">Меню</a></li>
+          <li><a href="jobs.html">Работа при нас</a></li>
+          <li><a href="contact.html">Контакти</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакт</h4>
+        <p data-contact-address>ул. „Полковник Лукашов“ 4, Враца 3000</p>
+        <p style="margin-top:8px;"><a href="tel:+359896717196" data-contact-phone-href data-contact-phone>089 671 7196</a></p>
+        <p style="margin-top:8px;" data-contact-hours>Всеки ден: 11:00 – 19:00 ч.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Витамина. Всички права запазени.</span>
+      <span>Направено с грижа във Враца 🌿</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
