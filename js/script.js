@@ -110,14 +110,12 @@ function initSupabaseSync(){
     supabaseClient = supabaseNamespace.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     supabaseReady = true;
     loadOrdersFromSupabase();
-    attachSupabaseOrdersListener(()=>{});
     attachOrderingPausedListener(()=>{});
     getSoupScheduleFromSupabase().then(schedule=>{
       if(schedule) localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
     });
     attachSoupScheduleListener(()=>{});
     loadApplicationsFromSupabase();
-    attachSupabaseApplicationsListener(()=>{});
   }catch(err){
     console.warn("Supabase не се инициализира:", err);
     supabaseReady = false;
@@ -125,16 +123,38 @@ function initSupabaseSync(){
   }
 }
 
+function mergeOrders(localOrders, remoteOrders){
+  const merged = [...localOrders];
+  (remoteOrders || []).forEach(remoteOrder => {
+    if(!remoteOrder || !remoteOrder.id) return;
+    const idx = merged.findIndex(localOrder => localOrder && localOrder.id === remoteOrder.id);
+    if(idx === -1){
+      merged.push(remoteOrder);
+    } else {
+      const localOrder = merged[idx];
+      const localDate = new Date(localOrder?.date || 0).getTime();
+      const remoteDate = new Date(remoteOrder?.date || 0).getTime();
+      merged[idx] = remoteDate >= localDate ? remoteOrder : localOrder;
+    }
+  });
+  return merged.sort((a, b) => new Date(b?.date || 0) - new Date(a?.date || 0));
+}
+
 async function loadOrdersFromSupabase(onChange){
   if(!supabaseReady || !supabaseClient) return;
-  const { data, error } = await supabaseClient
-    .from("orders")
-    .select("*")
-    .order("date", { ascending: false });
-  if(error){ console.warn("Не може да зареди поръчките от Supabase:", error); return; }
-  const orders = (data || []).map(o => ({ ...o, total: Number(o.total) }));
-  saveOrders(orders);
-  if(typeof onChange === "function") onChange();
+  try{
+    const { data, error } = await supabaseClient
+      .from("orders")
+      .select("*")
+      .order("date", { ascending: false });
+    if(error){ console.warn("Не може да зареди поръчките от Supabase:", error); return; }
+    const orders = (data || []).map(o => ({ ...o, total: Number(o.total) }));
+    const mergedOrders = mergeOrders(getOrders(), orders);
+    saveOrders(mergedOrders);
+    if(typeof onChange === "function") onChange();
+  }catch(err){
+    console.warn("Не може да зареди поръчките от Supabase:", err);
+  }
 }
 
 async function pushOrderToVitaminaSystem(order){
@@ -1635,6 +1655,7 @@ function initAdmin(){
     window.addEventListener("storage", (e)=>{
       if(e.key === APPS_KEY) renderAppsTable();
     });
+    attachSupabaseApplicationsListener(()=>{ refreshApps(); });
   }
 
   function renderOrderingPauseUI(){
@@ -1667,7 +1688,12 @@ function initAdmin(){
     startApplicationWatcher();
   }
 
-  checkAdminSupabaseSession().then(loggedIn => { if(loggedIn) showPanel(); });
+  checkAdminSupabaseSession().then(async loggedIn => { 
+    if(loggedIn){
+      await Promise.all([loadOrdersFromSupabase(), loadApplicationsFromSupabase()]);
+      showPanel();
+    }
+  });
 
   if(loginForm){
     loginForm.addEventListener("submit", async (e)=>{
@@ -1682,6 +1708,9 @@ function initAdmin(){
       const { error } = await supabaseClient.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pass });
       if(!error){
         err.style.display = "none";
+        await Promise.all([loadOrdersFromSupabase(), loadApplicationsFromSupabase()]);
+        attachSupabaseOrdersListener(()=>{ checkForNewOrders(); });
+        attachSupabaseApplicationsListener(()=>{ renderAppsTable(); });
         showPanel();
       } else {
         console.warn("Supabase вход неуспешен:", error);
