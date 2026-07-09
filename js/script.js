@@ -744,7 +744,6 @@ function initHome(){
       <div>
         ${soups.map(s => `
           <div class="soup-of-day-item">
-            ${s.photo ? `<img src="${s.photo}" alt="${escapeHtml(s.name)}" class="soup-of-day-photo">` : ""}
             <h3>${escapeHtml(s.name)}</h3>
           </div>
         `).join("")}
