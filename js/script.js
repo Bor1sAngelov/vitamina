@@ -138,14 +138,16 @@ async function loadOrdersFromSupabase(onChange){
 }
 
 async function pushOrderToVitaminaSystem(order){
-  if(!supabaseReady || !supabaseClient) return;
+  if(!supabaseReady || !supabaseClient) return false;
   try{
     const { error } = await supabaseClient
       .from("orders")
       .insert([{ ...order }]);
-    if(error) console.warn("Поръчката не се качи в споделената база:", error);
+    if(error){ console.warn("Поръчката не се качи в споделената база:", error); return false; }
+    return true;
   }catch(err){
     console.warn("Поръчката не се качи в споделената база:", err);
+    return false;
   }
 }
 
@@ -688,9 +690,10 @@ function initHome(){
         <span class="stamp-word">на деня</span>
         <span class="stamp-date">${getTodayDateString()}</span>
       </div>
-      <div class="soup-of-day-list">
+      <div>
         ${soups.map(s => `
           <div class="soup-of-day-item">
+            ${s.photo ? `<img src="${s.photo}" alt="${escapeHtml(s.name)}" class="soup-of-day-photo">` : ""}
             <h3>${escapeHtml(s.name)}</h3>
           </div>
         `).join("")}
@@ -922,7 +925,6 @@ function buildTodaysSoupMenuItems(){
     price: TARATOR_PRICE,
     weight: "300 мл.",
     desc: "",
-    photo: "img/soups/tarator.jpg",
     nut: { kcal:120, p:5, c:8, f:7 },
     isTarator: true,
   };
@@ -1467,26 +1469,15 @@ function initCart(){
       }
 
       const order = createOrder({ name, phone, time, note });
-      await pushOrderToVitaminaSystem(order);
-
-      const itemsText = cart.map(l => `${l.name}${l.details ? " ("+l.details+")" : ""} х${l.qty} — ${fmt(l.price*l.qty)} €${l.note ? `\n  📝 Бележка: ${l.note}` : ""}`).join("\n");
-      const bodyLines = [
-        `Нова поръчка от сайта на Витамина (#${order.number})`,
-        `Име: ${name}`,
-        `Телефон: ${phone}`,
-        `Час за вземане: ${time}`,
-        `--- Количка ---`,
-        itemsText,
-        `Общо: ${fmt(order.total)} €`,
-        `Бележка: ${note}`,
-      ];
-      const subject = encodeURIComponent(`Нова поръчка #${order.number} — Витамина`);
-      const body = encodeURIComponent(bodyLines.join("\n"));
-      window.location.href = `mailto:${CONTACT_INFO.email}?subject=${subject}&body=${body}`;
+      const pushed = await pushOrderToVitaminaSystem(order);
 
       clearCart();
       renderCart();
-      showToast(`Поръчка #${order.number} е записана. Отваряме имейл клиента ти...`);
+      if(pushed){
+        showToast(`Поръчка #${order.number} е изпратена успешно.`);
+      } else {
+        showToast(`Поръчка #${order.number} е записана локално, но не се качи в споделената система — обади ни се, за да сме сигурни, че сме я видели: ${CONTACT_INFO.phone}.`);
+      }
     });
   }
 
@@ -1585,7 +1576,7 @@ async function checkAdminSupabaseSession(){
 /* viewer.html пази старата, по-леко пазена парола — там няма лични
    данни, само общ брой прегледи по страница, затова не е пренесено
    към Supabase Auth. */
-const ADMIN_PASSWORD = "Invet6esto!1";
+const ADMIN_PASSWORD = "vitamina2026";
 const ADMIN_AUTH_KEY = "vitamina_admin_auth";
 
 function isAdminLoggedIn(){ return sessionStorage.getItem(ADMIN_AUTH_KEY) === "yes"; }
@@ -1687,7 +1678,14 @@ function initAdmin(){
         err.style.display = "none";
         showPanel();
       } else {
-        err.textContent = "Грешна парола. Опитай отново.";
+        console.warn("Supabase вход неуспешен:", error);
+        if(error.message && error.message.toLowerCase().includes("email not confirmed")){
+          err.textContent = "Профилът не е потвърден — в Supabase → Authentication → Users отметни ръчно потребителя като Confirmed.";
+        } else if(error.message && error.message.toLowerCase().includes("invalid login credentials")){
+          err.textContent = `Грешен имейл или парола. Провери в Supabase дали потребителят е точно "${ADMIN_EMAIL}".`;
+        } else {
+          err.textContent = "Грешка при вход: " + (error.message || "неизвестна причина") + ".";
+        }
         err.style.display = "block";
       }
     });
