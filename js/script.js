@@ -767,7 +767,7 @@ function initHome(){
       "img/gallery/gallery6.jpg",
     ];
     galleryStrip.innerHTML = photos.map(src => `
-      <img src="${src}" alt="Момент от кухнята на Витамина" class="gallery-photo">
+      <img src="${src}" alt="Момент от кухнята на Витамина" class="gallery-photo" width="480" height="480" loading="lazy" decoding="async">
     `).join("");
   }
 }
@@ -899,9 +899,9 @@ function getEffectiveItemView(item){
 function renderDetailPanel(item){
   const panel = document.getElementById("detailPanel");
   if(!panel) return;
-  if(!item){
+    if(!item){
     panel.innerHTML = `
-      <div class="detail-empty-logo"><img src="logo-vitamina.png" alt="Витамина" class="detail-logo-img"></div>
+      <div class="detail-empty-logo"><img src="logo-vitamina.png" alt="Витамина" class="detail-logo-img" width="160" height="120" loading="eager" decoding="async"></div>
       <h3>Избери продукт</h3>
       <p class="sub">Докосни артикул от менюто, за да видиш повече детайли тук.</p>
       <div class="detail-empty">Няма избран продукт</div>
@@ -910,7 +910,7 @@ function renderDetailPanel(item){
   }
   const view = getEffectiveItemView(item);
   panel.innerHTML = `
-    ${item.photo ? `<img src="${item.photo}" class="menu-item-photo" alt="${escapeHtml(item.name)}">` : `<div class="img-placeholder ph-card"><span class="ph-icon">📷</span><span class="ph-label">Снимка предстои</span></div>`}
+    ${item.photo ? `<img src="${item.photo}" class="menu-item-photo" alt="${escapeHtml(item.name)}" width="600" height="450" loading="lazy" decoding="async">` : `<div class="img-placeholder ph-card"><span class="ph-icon">📷</span><span class="ph-label">Снимка предстои</span></div>`}
     <h3>${escapeHtml(item.name)}</h3>
     ${item.desc ? `<p class="sub">${escapeHtml(item.desc)}</p>` : ""}
     ${item.sizes ? `
@@ -1022,7 +1022,7 @@ function initMenu(){
       const view = getEffectiveItemView(item);
       return `
       <div class="menu-item" data-id="${item.id}">
-        ${item.photo ? `<img src="${item.photo}" class="menu-item-photo" alt="${escapeHtml(item.name)}">` : `<div class="img-placeholder ph-card"><span class="ph-icon">📷</span><span class="ph-label">Снимка предстои</span></div>`}
+        ${item.photo ? `<img src="${item.photo}" class="menu-item-photo" alt="${escapeHtml(item.name)}" width="400" height="300" loading="lazy" decoding="async">` : `<div class="img-placeholder ph-card"><span class="ph-icon">📷</span><span class="ph-label">Снимка предстои</span></div>`}
         <div class="menu-item-top">
           <h4>${escapeHtml(item.name)}</h4>
           <span class="price" data-price>${fmt(view.price)} €</span>
@@ -1939,7 +1939,7 @@ function initAdmin(){
         <td><a href="mailto:${escapeHtml(a.email)}">${escapeHtml(a.email)}</a></td>
         <td>${escapeHtml(a.position)}</td>
         <td>${a.message ? escapeHtml(a.message) : "—"}</td>
-        <td>${a.photoData ? `<a href="${a.photoData}" target="_blank" rel="noopener"><img src="${a.photoData}" alt="Снимка" style="width:44px; height:44px; object-fit:cover; border-radius:8px; display:block;"></a>` : "—"}</td>
+        <td>${a.photoData ? `<a href="${a.photoData}" target="_blank" rel="noopener"><img src="${a.photoData}" alt="Снимка" width="44" height="44" style="object-fit:cover; border-radius:8px; display:block;" loading="lazy" decoding="async"></a>` : "—"}</td>
         <td>${a.cvData ? `<a href="${a.cvData}" download="${escapeHtml(a.cvName || 'CV')}">${escapeHtml(a.cvName || "CV файл")}</a>` : "—"}</td>
         <td><span class="status-pill ${a.status==='done'?'status-done':'status-new'}">${a.status==='done' ? "✓ Прегледана" : "● Нова"}</span></td>
         <td>
@@ -1998,7 +1998,7 @@ function initAdmin(){
                   <div class="field">
                     <label>Снимка</label>
                     <div class="soup-photo-row">
-                      ${s.photo ? `<img src="${s.photo}" class="soup-thumb" alt="">` : `<span class="soup-thumb-empty">Няма снимка</span>`}
+                      ${s.photo ? `<img src="${s.photo}" class="soup-thumb" alt="" width="84" height="84" loading="lazy" decoding="async">` : `<span class="soup-thumb-empty">Няма снимка</span>`}
                       <input type="file" accept="image/*" data-field="photo">
                     </div>
                   </div>
