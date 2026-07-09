@@ -1487,7 +1487,27 @@ function initCart(){
 
   const form = document.getElementById("orderForm");
   const phoneInput = document.getElementById("phone");
+  const successBox = document.getElementById("checkoutSuccess");
+  const newOrderBtn = document.getElementById("newOrderBtn");
   attachPhoneInputGuard(phoneInput);
+
+  function showCheckoutSuccess(){
+    if(successBox) successBox.classList.remove("hidden");
+  }
+  function hideCheckoutSuccess(){
+    if(successBox) successBox.classList.add("hidden");
+  }
+
+  if(newOrderBtn){
+    newOrderBtn.addEventListener("click", ()=>{
+      hideCheckoutSuccess();
+      if(form) form.reset();
+      applyOrderingWindow();
+      if(phoneInput) phoneInput.focus();
+      renderCart();
+    });
+  }
+
   if(form){
     form.addEventListener("submit", async (e)=>{
       e.preventDefault();
@@ -1523,9 +1543,12 @@ function initCart(){
       const pushed = await pushOrderToVitaminaSystem(order);
 
       clearCart();
+      if(form) form.reset();
+      applyOrderingWindow();
       renderCart();
+      showCheckoutSuccess();
       if(pushed){
-        showToast(`Поръчка #${order.number} е изпратена успешно.`);
+        showToast("Вашата поръчка е приета! Благодарим! (Ако има някакъв проблем ще се свържем с вас по телефона)");
       } else {
         showToast(`Поръчка #${order.number} е записана локално, но не се качи в споделената система — обади ни се, за да сме сигурни, че сме я видели: ${CONTACT_INFO.phone}.`);
       }

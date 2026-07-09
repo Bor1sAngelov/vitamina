@@ -545,6 +545,14 @@ h1,h2,h3,h4{
   box-shadow:var(--shadow-lift); opacity:0; pointer-events:none; transition:.25s ease; z-index:200;
 }
 .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+.checkout-success{
+  margin-top:16px; padding:16px; border-radius:14px;
+  background:linear-gradient(135deg, rgba(96,165,72,0.14), rgba(29,120,90,0.12));
+  border:1px solid rgba(96,165,72,0.25); color:var(--green-700);
+}
+.checkout-success h4{ margin:0 0 8px; font-size:1rem; }
+.checkout-success p{ margin:0 0 12px; line-height:1.5; }
+.checkout-success.hidden{ display:none; }
 
 /* =========================================================
    КОЛИЧКА — икона с брояч в навигацията
