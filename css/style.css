@@ -370,14 +370,14 @@ h1,h2,h3,h4{
 .detail-panel .ph-card{ margin-bottom:0; }
 
 /* Build your own — price calculator */
-.builder-wrap{ display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:flex-start; }
+.builder-wrap{ display:grid; grid-template-columns:1fr; gap:32px; align-items:flex-start; }
 .builder-step{ margin-bottom:30px; }
 .builder-step h4{
   font-size:0.82rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--charcoal-soft);
   margin-bottom:14px; display:flex; align-items:center; gap:10px;
 }
 .builder-step h4 .num{ width:24px; height:24px; border-radius:50%; background:var(--green-700); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.72rem; }
-.ingredient-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+.ingredient-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
 .ingredient{ position:relative; background:var(--cream-card); border:1.5px solid var(--line); border-radius:14px; padding:14px; cursor:pointer; transition:.15s; user-select:none; }
 .ingredient:hover{ border-color:var(--green-500); transform:translateY(-2px); }
 .ingredient.active{ border-color:var(--green-500); background:var(--green-100); }
@@ -735,13 +735,13 @@ table.data-table tr:last-child td{ border-bottom:none; }
   .detail-panel{ padding:18px; border-radius:16px; }
   .detail-panel h3{ font-size:1.05rem; margin-top:10px; }
   .detail-panel .dp-price{ font-size:1.8rem; margin-top:10px; }
-  .builder-wrap{ gap:20px; }
-  .builder-step{ margin-bottom:20px; }
-  .ingredient-grid{ grid-template-columns:1fr 1fr; gap:10px; }
-  .ingredient{ padding:12px; }
+  .builder-wrap{ display:grid; grid-template-columns:1fr; gap:16px; width:100%; min-width:0; }
+  .builder-step{ margin-bottom:20px; min-width:0; }
+  .ingredient-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; min-width:0; width:100%; }
+  .ingredient{ padding:12px; min-width:0; }
   .ingredient .name{ font-size:0.86rem; }
   .ingredient .meta{ font-size:0.72rem; }
-  .bowl-summary{ padding:20px; border-radius:16px; }
+  .bowl-summary{ padding:20px; border-radius:16px; width:100%; min-width:0; }
   .bowl-line{ font-size:0.82rem; }
   .wrap-toggle{ padding:10px 12px; }
 }
@@ -749,10 +749,10 @@ table.data-table tr:last-child td{ border-bottom:none; }
 @media (max-width:480px){
   .menu-tabs{ flex-direction:column; }
   .menu-grid{ grid-template-columns:1fr; }
-  .ingredient-grid{ grid-template-columns:1fr; }
+  .ingredient-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
   .detail-panel{ padding:16px; }
   .detail-panel .dp-price{ font-size:1.65rem; }
-  .bowl-summary{ padding:16px; }
+  .bowl-summary{ padding:16px; width:100%; }
   .bowl-actions .btn{ width:100%; }
   .wrap-toggle span{ font-size:0.82rem; }
 }
