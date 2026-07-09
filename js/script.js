@@ -975,6 +975,7 @@ function buildTodaysSoupMenuItems(){
     price: TARATOR_PRICE,
     weight: "300 мл.",
     desc: "",
+    photo: "img/soups/tarator.jpg",
     nut: { kcal:120, p:5, c:8, f:7 },
     isTarator: true,
   };

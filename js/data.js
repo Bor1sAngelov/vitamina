@@ -231,7 +231,7 @@ const MENU_DATA = [
         { label:"350 мл.", price:7.63, nut:{kcal:273,p:8,c:42,f:8} },
         { label:"500 мл.", price:9.00, nut:{kcal:390,p:12,c:60,f:12}, isDefault:true },
       ] },
-    { id:"sm4", name:"Детокс смути",         photo:"img/smoothies/detoks.jpg", desc:"Магданоз, краставица, спанак, морков и филтрирана вода.",
+    { id:"sm4", name:"Детокс смути",         photo:"img/smoothies/Detoks.jpg", desc:"Магданоз, краставица, спанак, морков и филтрирана вода.",
       sizes:[
         { label:"350 мл.", price:7.04, nut:{kcal:91,p:2,c:18,f:1} },
         { label:"500 мл.", price:8.61, nut:{kcal:130,p:3,c:26,f:1}, isDefault:true },
@@ -239,31 +239,31 @@ const MENU_DATA = [
   ]},
 
   { category:"Фреш", icon:"🍊", items:[
-    { id:"fr1", name:"Портокал", desc:"Прясно изцеден портокалов сок.",
+    { id:"fr1", name:"Портокал", photo:"img/Juice/Orange.jpeg", desc:"Прясно изцеден портокалов сок.",
       sizes:[
         { label:"300 мл.", price:4.50,  nut:{kcal:126,p:2,c:28,f:0} },
         { label:"500 мл.", price:6.45,  nut:{kcal:210,p:3,c:47,f:0}, isDefault:true },
         { label:"1 л.",    price:13.10, nut:{kcal:420,p:6,c:94,f:0} },
       ] },
-    { id:"fr2", name:"Ябълка", desc:"Прясно изцеден ябълков сок.",
+    { id:"fr2", name:"Ябълка", photo:"img/Juice/Apple.jpg", desc:"Прясно изцеден ябълков сок.",
       sizes:[
         { label:"300 мл.", price:5.09,  nut:{kcal:135,p:0,c:33,f:0} },
         { label:"500 мл.", price:7.04,  nut:{kcal:225,p:0,c:55,f:0}, isDefault:true },
         { label:"1 л.",    price:14.08, nut:{kcal:450,p:0,c:110,f:0} },
       ] },
-    { id:"fr3", name:"Морков", desc:"Прясно изцеден морковен сок.",
+    { id:"fr3", name:"Морков", photo:"img/Juice/Carrot.jpg", desc:"Прясно изцеден морковен сок.",
       sizes:[
         { label:"300 мл.", price:5.09,  nut:{kcal:99,p:2,c:22,f:0} },
         { label:"500 мл.", price:7.04,  nut:{kcal:165,p:4,c:37,f:0}, isDefault:true },
         { label:"1 л.",    price:14.08, nut:{kcal:330,p:8,c:74,f:0} },
       ] },
-    { id:"fr4", name:"Грейпфрут", desc:"Прясно изцеден грейпфрутов сок.",
+    { id:"fr4", name:"Грейпфрут", photo:"img/Juice/Greip.jpg", desc:"Прясно изцеден грейпфрутов сок.",
       sizes:[
         { label:"300 мл.", price:5.48,  nut:{kcal:105,p:1,c:25,f:0} },
         { label:"500 мл.", price:7.63,  nut:{kcal:175,p:2,c:42,f:0}, isDefault:true },
         { label:"1 л.",    price:15.06, nut:{kcal:350,p:4,c:84,f:0} },
       ] },
-    { id:"fr5", name:"Фреш микс", desc:"Портокал, ябълка, морков и грейпфрут.",
+    { id:"fr5", name:"Фреш микс", photo:"img/Juice/Miks.jpg", desc:"Портокал, ябълка, морков и грейпфрут.",
       sizes:[
         { label:"300 мл.", price:5.48,  nut:{kcal:120,p:1,c:28,f:0} },
         { label:"500 мл.", price:8.02,  nut:{kcal:200,p:2,c:46,f:0}, isDefault:true },
