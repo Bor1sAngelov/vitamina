@@ -157,13 +157,35 @@ async function loadOrdersFromSupabase(onChange){
   }
 }
 
+function isMissingSupabaseColumnError(error){
+  const code = error?.code || "";
+  const message = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+  return code === "PGRST204" || code === "42703" || (message.includes("could not find") && message.includes("column"));
+}
+
+function sanitizeOrderForSupabase(order){
+  if(!order) return null;
+  const { confirmStatus, delayMinutes, ...rest } = order;
+  return { ...rest, status: rest.status || "new", total: Number(rest.total || 0) };
+}
+
 async function pushOrderToVitaminaSystem(order){
   if(!supabaseReady || !supabaseClient) return false;
   try{
     const { error } = await supabaseClient
       .from("orders")
       .insert([{ ...order }]);
-    if(error){ console.warn("Поръчката не се качи в споделената база:", error); return false; }
+    if(error){
+      if(isMissingSupabaseColumnError(error)){
+        const { error: fallbackError } = await supabaseClient
+          .from("orders")
+          .insert([sanitizeOrderForSupabase(order)]);
+        if(fallbackError){ console.warn("Поръчката не се качи в споделената база:", fallbackError); return false; }
+        return true;
+      }
+      console.warn("Поръчката не се качи в споделената база:", error);
+      return false;
+    }
     return true;
   }catch(err){
     console.warn("Поръчката не се качи в споделената база:", err);
@@ -173,9 +195,18 @@ async function pushOrderToVitaminaSystem(order){
 
 async function mirrorOrderUpdate(order){
   if(!supabaseReady || !supabaseClient || !order) return;
-  await supabaseClient
-    .from("orders")
-    .upsert([{ ...order }], { onConflict: ["id"] });
+  try{
+    const { error } = await supabaseClient
+      .from("orders")
+      .upsert([{ ...order }], { onConflict: ["id"] });
+    if(error && isMissingSupabaseColumnError(error)){
+      await supabaseClient
+        .from("orders")
+        .upsert([sanitizeOrderForSupabase(order)], { onConflict: ["id"] });
+    }
+  }catch(err){
+    console.warn("Не може да обнови поръчката в споделената база:", err);
+  }
 }
 
 async function mirrorOrderDelete(id){

@@ -57,6 +57,8 @@ create table if not exists public.orders (
   "delayMinutes"  integer                          -- set when confirmStatus = 'delayed'
 );
 
+alter table public.orders add column if not exists "confirmStatus" text not null default 'pending';
+alter table public.orders add column if not exists "delayMinutes" integer;
 alter table public.orders enable row level security;
 
 drop policy if exists "orders_select_anon" on public.orders;
