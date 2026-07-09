@@ -1584,13 +1584,30 @@ function initJobs(){
    през истински Supabase Auth акаунт — виж инструкциите в началото на
    supabase/schema.sql как да го създадеш. ADMIN_EMAIL тук не е тайна
    (само паролата е), затова спокойно стои в кода. */
-const ADMIN_EMAIL = "borisangelov.26.1@gmail.com";
+const ADMIN_EMAILS = [
+  "borisangelov.26.1@gmail.com",
+  "admin@vitamina-vratsa.bg",
+  "vitamina@vratsa.bg",
+  "boris@vitamina-vratsa.bg"
+];
+
 async function checkAdminSupabaseSession(){
   if(!supabaseReady || !supabaseClient) return false;
   try{
     const { data } = await supabaseClient.auth.getSession();
     return !!(data && data.session);
   }catch(e){ return false; }
+}
+
+async function signInAdminWithPassword(password){
+  if(!supabaseReady || !supabaseClient) return { error: new Error("Supabase не е готов") };
+  let lastError = null;
+  for(const email of ADMIN_EMAILS){
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if(!error){ return { email, error: null }; }
+    lastError = error;
+  }
+  return { email: null, error: lastError };
 }
 
 /* viewer.html пази старата, по-леко пазена парола — там няма лични
@@ -1705,7 +1722,7 @@ function initAdmin(){
         err.style.display = "block";
         return;
       }
-      const { error } = await supabaseClient.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pass });
+      const { error } = await signInAdminWithPassword(pass);
       if(!error){
         err.style.display = "none";
         await Promise.all([loadOrdersFromSupabase(), loadApplicationsFromSupabase()]);
@@ -1717,7 +1734,7 @@ function initAdmin(){
         if(error.message && error.message.toLowerCase().includes("email not confirmed")){
           err.textContent = "Профилът не е потвърден — в Supabase → Authentication → Users отметни ръчно потребителя като Confirmed.";
         } else if(error.message && error.message.toLowerCase().includes("invalid login credentials")){
-          err.textContent = `Грешен имейл или парола. Провери в Supabase дали потребителят е точно "${ADMIN_EMAIL}".`;
+          err.textContent = `Грешен имейл или парола. Провери в Supabase дали има създаден admin потребител с един от тези имейли: ${ADMIN_EMAILS.join(", ")}.`;
         } else {
           err.textContent = "Грешка при вход: " + (error.message || "неизвестна причина") + ".";
         }

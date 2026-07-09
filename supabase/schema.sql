@@ -61,8 +61,8 @@ alter table public.orders enable row level security;
 
 drop policy if exists "orders_select_anon" on public.orders;
 drop policy if exists "orders_select_auth" on public.orders;
-create policy "orders_select_auth" on public.orders
-  for select to authenticated using (true);
+create policy "orders_select_anon" on public.orders
+  for select to anon, authenticated using (true);
 
 drop policy if exists "orders_insert_anon" on public.orders;
 create policy "orders_insert_anon" on public.orders
@@ -112,8 +112,8 @@ alter table public.applications enable row level security;
 
 drop policy if exists "applications_select_anon" on public.applications;
 drop policy if exists "applications_select_auth" on public.applications;
-create policy "applications_select_auth" on public.applications
-  for select to authenticated using (true);
+create policy "applications_select_anon" on public.applications
+  for select to anon, authenticated using (true);
 
 drop policy if exists "applications_insert_anon" on public.applications;
 create policy "applications_insert_anon" on public.applications
