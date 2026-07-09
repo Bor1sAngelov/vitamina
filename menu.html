@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
@@ -39,30 +39,32 @@
     </div>
   </section>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="ribbon ribbon-sm">Хапни съзнателно</span>
-        <h2 style="margin-top:16px;">Калкулатор на калории и макронутриенти</h2>
-        <p>Избери продукти от менюто и виж ориентировъчните калории, протеини, въглехидрати и мазнини за твоята поръчка.</p>
+  <div class="menu-page-stack">
+    <section class="section-tight calc-section">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="ribbon ribbon-sm">Хапни съзнателно</span>
+          <h2 style="margin-top:16px;">Калкулатор на калории и макронутриенти</h2>
+          <p>Избери продукти от менюто и виж ориентировъчните калории, протеини, въглехидрати и мазнини за твоята поръчка.</p>
+        </div>
+        <div class="reveal" id="calcWidget"><!-- попълва се от script.js --></div>
       </div>
-      <div class="reveal" id="calcWidget"><!-- попълва се от script.js --></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="menu-tabs reveal" id="menuTabs"><!-- попълва се от script.js --></div>
+    <section class="section-tight menu-main-section">
+      <div class="container">
+        <div class="menu-tabs reveal" id="menuTabs"><!-- попълва се от script.js --></div>
 
-      <div id="menuGridWrap" class="two-col-menu">
-        <div class="menu-grid reveal-stagger" id="menuGrid"><!-- попълва се от script.js --></div>
-        <aside class="detail-panel reveal" id="detailPanel"><!-- попълва се от script.js --></aside>
+        <div id="menuGridWrap" class="two-col-menu">
+          <div class="menu-grid reveal-stagger" id="menuGrid"><!-- попълва се от script.js --></div>
+          <aside class="detail-panel reveal" id="detailPanel"><!-- попълва се от script.js --></aside>
+        </div>
+
+        <div class="diy-type-grid reveal-stagger" id="builderTypeCards" style="margin-top:8px;"><!-- попълва се от script.js, само в режим "Направи си сам" --></div>
+        <div id="builderMount"><!-- попълва се от script.js --></div>
       </div>
-
-      <div class="diy-type-grid reveal-stagger" id="builderTypeCards" style="margin-top:8px;"><!-- попълва се от script.js, само в режим "Направи си сам" --></div>
-      <div id="builderMount"><!-- попълва се от script.js --></div>
-    </div>
-  </section>
+    </section>
+  </div>
 
 </main>
 

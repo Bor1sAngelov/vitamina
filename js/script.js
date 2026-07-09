@@ -691,12 +691,10 @@ function initHome(){
       <div class="soup-of-day-list">
         ${soups.map(s => `
           <div class="soup-of-day-item">
-            ${s.photo ? `<img src="${s.photo}" alt="${escapeHtml(s.name)}" class="soup-of-day-photo">` : ""}
             <h3>${escapeHtml(s.name)}</h3>
           </div>
         `).join("")}
         <div class="soup-of-day-item">
-          <img src="img/soups/tarator.jpg" alt="Таратор" class="soup-of-day-photo">
           <h3>Таратор</h3>
           <p class="soup-tarator-note">${fmt(TARATOR_PRICE)} € — по желание с ядки (+${fmt(TARATOR_NUTS_ADDON_PRICE)} €)</p>
         </div>

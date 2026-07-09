@@ -207,10 +207,11 @@ h1,h2,h3,h4{
 .nav-toggle span::before{ position:absolute; top:-6px; }
 .nav-toggle span::after{ position:absolute; top:6px; }
 @media (max-width:860px){
-  .nav-links{ position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; background:var(--cream-card); padding:10px 20px 20px; border-bottom:1px solid var(--line); display:none; }
+  .nav-links{ position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; background:var(--cream-card); padding:10px 20px 20px; border-bottom:1px solid var(--line); display:none; box-shadow:0 12px 24px rgba(23,63,41,0.08); }
   .nav-links.open{ display:flex; }
-  .nav-links a{ padding:12px 14px; }
+  .nav-links a{ padding:12px 14px; border-radius:12px; }
   .nav-toggle{ display:flex; }
+  .nav{ padding:14px 20px; }
 }
 
 /* =========================================================
@@ -474,6 +475,66 @@ h1,h2,h3,h4{
 @media (max-width:900px){ .gallery-strip{ grid-template-columns:repeat(3,1fr); } }
 @media (max-width:560px){ .gallery-strip{ grid-template-columns:repeat(2,1fr); } }
 
+@media (max-width:640px){
+  .container{ padding:0 16px; }
+  .site-header .nav{ padding:12px 16px; }
+  .logo{ font-size:1.2rem; gap:8px; }
+  .logo-img{ height:32px; }
+  .nav-links{ padding:10px 16px 16px; }
+  .hero{ padding:40px 0 56px; }
+  .hero-grid{ gap:24px; }
+  .hero h1{ font-size:2.1rem; line-height:1.06; }
+  .hero p.lead{ font-size:1rem; margin-bottom:24px; }
+  .hero-actions{ flex-direction:column; align-items:stretch; }
+  .hero-actions .btn{ width:100%; }
+  .hero-art-badge{ right:10px; bottom:-8px; font-size:0.74rem; padding:10px 16px; }
+  .section{ padding:64px 0; }
+  .section-tight{ padding:40px 0; }
+  .section-head{ margin-bottom:28px; }
+  .section-head h2{ font-size:1.6rem; }
+  .soup-card{ padding:22px; gap:18px; border-radius:18px; }
+  .soup-card h3{ font-size:1.25rem; }
+  .soup-of-day-list{ gap:12px; }
+  .soup-of-day-item{ min-width:100%; }
+  .crate-grid{ grid-template-columns:1fr; gap:14px; }
+  .about-grid{ gap:28px; }
+  .about-stats{ grid-template-columns:1fr; gap:12px; }
+  .form-card, .contact-card, .admin-card, .bowl-summary, .calc-wrap, .daily-banner{ padding:24px; border-radius:18px; }
+  .daily-banner{ gap:18px; margin-bottom:32px; }
+  .form-actions{ flex-direction:column; }
+  .form-actions .btn{ width:100%; }
+  .footer-grid{ gap:24px; padding-bottom:24px; }
+  .footer-bottom{ flex-direction:column; align-items:flex-start; }
+  .menu-tabs{ gap:8px; }
+  .menu-tab{ width:100%; justify-content:center; }
+  .menu-grid{ grid-template-columns:1fr; }
+  .diy-type-grid{ grid-template-columns:1fr 1fr; }
+  .two-col-menu, .two-col-cart, .two-col-jobs{ gap:24px; }
+}
+
+@media (max-width:480px){
+  .container{ padding:0 14px; }
+  .site-header .nav{ padding:10px 14px; }
+  .logo{ font-size:1.1rem; }
+  .logo-img{ height:28px; }
+  .nav-toggle{ width:40px; height:40px; }
+  .hero{ padding:32px 0 48px; }
+  .hero h1{ font-size:1.9rem; }
+  .hero-art-badge{ position:static; display:inline-flex; margin-top:10px; }
+  .ribbon{ padding:11px 22px; }
+  .ribbon-sm{ font-size:0.92rem; padding:8px 18px; }
+  .section-head h2{ font-size:1.45rem; }
+  .soup-card{ padding:18px; }
+  .gallery-strip{ grid-template-columns:repeat(2,1fr); }
+  .diy-type-grid{ grid-template-columns:1fr; }
+  .form-card, .contact-card, .admin-card, .bowl-summary, .calc-wrap{ padding:20px; }
+  .note-modal, .pause-overlay-card{ padding:22px 18px; }
+  .note-modal-actions{ flex-direction:column-reverse; }
+  .note-modal-actions .btn{ width:100%; }
+  .cart-line{ grid-template-columns:1fr; gap:12px; padding:14px; }
+  .cart-line-qty{ width:fit-content; }
+}
+
 /* Utility */
 .mt-0{ margin-top:0; }
 .center{ text-align:center; }
@@ -551,7 +612,26 @@ h1,h2,h3,h4{
 .calc-note{ font-size:0.76rem; color:#bcd4bd; margin-top:12px; }
 .calc-results .btn-ghost{ border-color:rgba(255,255,255,0.4); color:#fff; margin-top:14px; }
 .calc-results .btn-ghost:hover{ border-color:#fff; }
-@media (max-width:760px){ .calc-wrap{ grid-template-columns:1fr; } }
+@media (max-width:760px){
+  .calc-wrap{ grid-template-columns:1fr; gap:18px; padding:20px; border-radius:18px; }
+  .calc-picker label{ font-size:0.82rem; }
+  .calc-picked-list{ margin-top:12px; gap:8px; max-height:none; }
+  .calc-line{ padding:10px 12px; font-size:0.82rem; align-items:flex-start; gap:8px; }
+  .calc-line-actions{ flex-shrink:0; }
+  .calc-results{ padding:18px; border-radius:16px; }
+  .calc-results h4{ margin-bottom:12px; }
+  .calc-stat{ padding:7px 0; }
+  .calc-stat b{ font-size:1.15rem; }
+  .calc-note{ font-size:0.74rem; }
+}
+
+@media (max-width:480px){
+  .calc-wrap{ padding:16px; }
+  .calc-line{ flex-direction:column; align-items:flex-start; }
+  .calc-line-actions{ align-self:flex-end; }
+  .calc-results .btn-ghost{ width:100%; }
+  .calc-results{ padding:16px; }
+}
 
 /* =========================================================
    КОЛИЧКА / CART страница
@@ -633,6 +713,40 @@ table.data-table tr:last-child td{ border-bottom:none; }
   .page-hero h1{ font-size:1.7rem; }
   .diy-type-grid{ grid-template-columns:1fr 1fr; }
   table.data-table{ font-size:0.78rem; }
+  .menu-page-stack{ display:flex; flex-direction:column; }
+  .menu-page-stack .calc-section{ order:2; }
+  .menu-page-stack .menu-main-section{ order:1; }
+  .menu-tabs{ gap:8px; margin-bottom:20px; }
+  .menu-tab{ width:100%; justify-content:center; padding:11px 14px; }
+  .menu-grid{ grid-template-columns:1fr; gap:12px; }
+  .menu-item{ padding:14px; gap:6px; border-radius:14px; }
+  .menu-item h4{ font-size:0.98rem; }
+  .menu-item .desc{ font-size:0.82rem; }
+  .menu-item .price{ font-size:0.9rem; }
+  .menu-item .weight-pill{ font-size:0.72rem; padding:4px 10px; }
+  .detail-panel{ padding:18px; border-radius:16px; }
+  .detail-panel h3{ font-size:1.05rem; margin-top:10px; }
+  .detail-panel .dp-price{ font-size:1.8rem; margin-top:10px; }
+  .builder-wrap{ gap:20px; }
+  .builder-step{ margin-bottom:20px; }
+  .ingredient-grid{ grid-template-columns:1fr 1fr; gap:10px; }
+  .ingredient{ padding:12px; }
+  .ingredient .name{ font-size:0.86rem; }
+  .ingredient .meta{ font-size:0.72rem; }
+  .bowl-summary{ padding:20px; border-radius:16px; }
+  .bowl-line{ font-size:0.82rem; }
+  .wrap-toggle{ padding:10px 12px; }
+}
+
+@media (max-width:480px){
+  .menu-tabs{ flex-direction:column; }
+  .menu-grid{ grid-template-columns:1fr; }
+  .ingredient-grid{ grid-template-columns:1fr; }
+  .detail-panel{ padding:16px; }
+  .detail-panel .dp-price{ font-size:1.65rem; }
+  .bowl-summary{ padding:16px; }
+  .bowl-actions .btn{ width:100%; }
+  .wrap-toggle span{ font-size:0.82rem; }
 }
 
 /* =========================================================
