@@ -913,3 +913,25 @@ table.data-table tr:last-child td{ border-bottom:none; }
   background:var(--green-100);
 }
 .detail-logo-img{ width:55%; max-width:160px; height:auto; opacity:0.9; }
+
+/* Additional mobile fixes: ensure two-column layouts collapse cleanly
+   and ingredient lists are usable on narrow screens. These rules
+   override any remaining desktop styles on small viewports. */
+@media (max-width:900px){
+  .two-col-menu, .two-col-cart, .two-col-jobs{ grid-template-columns:1fr !important; }
+  .two-col-menu .detail-panel, .two-col-cart .detail-panel{ position:static !important; order:-1 !important; width:100% !important; }
+  .menu-grid{ grid-template-columns:1fr !important; }
+  .menu-page-stack .menu-main-section{ padding-top:0; }
+}
+
+@media (max-width:640px){
+  /* make ingredient lists horizontally scrollable on very small screens */
+  .ingredient-grid{ display:flex !important; flex-direction:row; gap:10px; overflow-x:auto; padding-bottom:8px; }
+  .ingredient{ min-width:140px; flex:0 0 auto; }
+  .detail-panel{ position:static; width:100%; }
+}
+
+@media (max-width:480px){
+  .ingredient{ padding:10px; border-radius:12px; }
+  .menu-tab{ padding:10px 12px; }
+}
