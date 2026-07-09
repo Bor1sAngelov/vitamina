@@ -1597,7 +1597,8 @@ function initAdmin(){
   }
   function saveSeenOrderIds(ids){ localStorage.setItem(ADMIN_SEEN_ORDERS_KEY, JSON.stringify(ids)); }
   let orderWatcherStarted = false;
-  function checkForNewOrders(){
+  async function checkForNewOrders(){
+    if(supabaseReady && supabaseClient){ await loadOrdersFromSupabase(); }
     const orders = getOrders();
     const seen = new Set(getSeenOrderIds());
     const freshOnes = orders.filter(o=>!seen.has(o.id));
@@ -1606,14 +1607,14 @@ function initAdmin(){
       showToast(freshOnes.length === 1 ? `🔔 Нова поръчка №${freshOnes[0].number}!` : `🔔 ${freshOnes.length} нови поръчки!`);
       orders.forEach(o=>seen.add(o.id));
       saveSeenOrderIds(Array.from(seen));
-      renderOrdersTable();
     }
+    renderOrdersTable();
   }
   function startOrderWatcher(){
     if(orderWatcherStarted) return;
     orderWatcherStarted = true;
     checkForNewOrders();
-    setInterval(checkForNewOrders, 2000);
+    setInterval(checkForNewOrders, 3000);
     window.addEventListener("storage", (e)=>{
       if(e.key === ORDERS_KEY) checkForNewOrders();
     });
@@ -1625,7 +1626,12 @@ function initAdmin(){
   function startApplicationWatcher(){
     if(appWatcherStarted) return;
     appWatcherStarted = true;
-    setInterval(()=>{ renderAppsTable(); }, 3000);
+    async function refreshApps(){
+      if(supabaseReady && supabaseClient){ await loadApplicationsFromSupabase(); }
+      renderAppsTable();
+    }
+    refreshApps();
+    setInterval(refreshApps, 3000);
     window.addEventListener("storage", (e)=>{
       if(e.key === APPS_KEY) renderAppsTable();
     });
