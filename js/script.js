@@ -767,7 +767,7 @@ function initHome(){
       "img/gallery/gallery6.jpg",
     ];
     galleryStrip.innerHTML = photos.map(src => `
-      <img src="${src}" alt="Момент от кухнята на Витамина" class="gallery-photo" width="480" height="480" loading="lazy" decoding="async">
+      <div class="gallery-photo-frame"><img src="${src}" alt="Момент от кухнята на Витамина" class="gallery-photo" width="480" height="480" loading="lazy" decoding="async"></div>
     `).join("");
   }
 }
