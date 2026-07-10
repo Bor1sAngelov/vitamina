@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /viewer.html
+Disallow: /cart.html
+
+Sitemap: https://saladbarvitamina.bg/sitemap.xml
