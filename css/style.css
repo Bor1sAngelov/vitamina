@@ -737,19 +737,20 @@ table.data-table tr:last-child td{ border-bottom:none; }
   .detail-panel .dp-price{ font-size:1.8rem; margin-top:10px; }
   .builder-wrap{ display:grid; grid-template-columns:1fr; gap:16px; width:100%; min-width:0; }
   .builder-step{ margin-bottom:20px; min-width:0; }
-  .ingredient-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; min-width:0; width:100%; }
-  .ingredient{ padding:12px; min-width:0; }
-  .ingredient .name{ font-size:0.86rem; }
-  .ingredient .meta{ font-size:0.72rem; }
+  .ingredient-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; min-width:0; width:100%; }
+  .ingredient{ padding:14px 12px; min-width:0; min-height:56px; display:flex; flex-direction:column; justify-content:center; }
+  .ingredient .name{ font-size:0.88rem; line-height:1.25; }
+  .ingredient .meta{ font-size:0.74rem; }
   .bowl-summary{ padding:20px; border-radius:16px; width:100%; min-width:0; }
   .bowl-line{ font-size:0.82rem; }
   .wrap-toggle{ padding:10px 12px; }
+  .dressing-select{ font-size:16px; padding:13px 14px; }
 }
 
 @media (max-width:480px){
   .menu-tabs{ flex-direction:column; }
   .menu-grid{ grid-template-columns:1fr; }
-  .ingredient-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .ingredient-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
   .detail-panel{ padding:16px; }
   .detail-panel .dp-price{ font-size:1.65rem; }
   .bowl-summary{ padding:16px; width:100%; }
@@ -925,13 +926,10 @@ table.data-table tr:last-child td{ border-bottom:none; }
 }
 
 @media (max-width:640px){
-  /* make ingredient lists horizontally scrollable on very small screens */
-  .ingredient-grid{ display:flex !important; flex-direction:row; gap:10px; overflow-x:auto; padding-bottom:8px; }
-  .ingredient{ min-width:140px; flex:0 0 auto; }
   .detail-panel{ position:static; width:100%; }
 }
 
 @media (max-width:480px){
-  .ingredient{ padding:10px; border-radius:12px; }
+  .ingredient{ padding:12px 10px; border-radius:12px; }
   .menu-tab{ padding:10px 12px; }
 }
