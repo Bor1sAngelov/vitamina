@@ -32,7 +32,7 @@ const CONTACT_INFO = {
   /* ⚠️ Не успяхме да потвърдим със сигурност точните профили —
      сложи тук истинските линкове, преди да пуснеш сайта на живо. */
   instagram: "https://www.instagram.com/vitaminasaladbar/",
-  tiktok: "https://www.tiktok.com/@vitaminasaladbar",
+  tiktok: "https://www.tiktok.com/@saladbarvitamina",
   address: "ул. „Полковник Лукашов“ 4, Враца 3000",
   hours: "Пон–Пет: 9:00 – 19:00 ч. · Съб–Нед: 10:00 – 17:00 ч.",
 };

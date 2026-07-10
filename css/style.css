@@ -413,6 +413,19 @@ h1,h2,h3,h4{
 .switch.on{ background:var(--green-600); }
 .switch.on::after{ transform:translateX(18px); }
 
+/* Направи си сам — desktop: съставките вляво, калкулаторът (bowl-summary)
+   вдясно като sticky сайдбар, вместо да се редят едно под друго на цяла
+   ширина. Съвпада с прекъсването на .two-col-menu (900px) другаде в
+   менюто. По-плътната 4-колонна решетка прави полетата на съставките
+   осезаемо по-малки, вместо да се разтягат на цялата ширина на страницата. */
+@media (min-width:901px){
+  .builder-wrap{ grid-template-columns:1fr 340px; gap:32px; }
+  .ingredient-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+  .ingredient{ padding:11px; }
+  .ingredient .name{ font-size:0.84rem; }
+  .ingredient .meta{ font-size:0.7rem; }
+}
+
 /* =========================================================
    ORDER PAGE
    ========================================================= */
