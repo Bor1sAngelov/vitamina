@@ -361,6 +361,15 @@ h1,h2,h3,h4{
 
 /* Detail / info panel replaces nutrition panel */
 .detail-panel{ position:sticky; top:96px; background:var(--green-800); color:#fff; border-radius:20px; padding:22px; overflow:hidden; }
+/* Компактно състояние — само докато панелът е РЕАЛНО залепнал (sticky)
+   при скрол, а не в естествената си позиция в началото (виж
+   initDetailPanelStickyCompact в script.js). Крие снимката, за да не
+   заема твърде много място от екрана по време на скрол. */
+.detail-panel.is-stuck{ padding-top:14px; padding-bottom:14px; }
+.detail-panel.is-stuck .menu-item-photo,
+.detail-panel.is-stuck .img-placeholder,
+.detail-panel.is-stuck .detail-empty-logo{ display:none; }
+.detail-panel.is-stuck h3{ margin-top:0; }
 .detail-panel h3{ color:#fff; font-size:1.2rem; margin-top:14px; }
 .detail-panel .sub{ color:#bcd4bd; font-size:0.86rem; margin-top:6px; margin-bottom:6px; }
 .detail-panel .dp-price{ font-family:var(--font-display); font-size:2.1rem; font-weight:800; margin-top:14px; }
@@ -934,13 +943,14 @@ table.data-table tr:last-child td{ border-bottom:none; }
    override any remaining desktop styles on small viewports. */
 @media (max-width:900px){
   .two-col-menu, .two-col-cart, .two-col-jobs{ grid-template-columns:1fr !important; }
-  .two-col-menu .detail-panel, .two-col-cart .detail-panel{ position:static !important; order:-1 !important; width:100% !important; }
+  .two-col-menu .detail-panel{ position:sticky !important; top:68px !important; order:-1 !important; width:100% !important; z-index:20; }
+  .two-col-cart .detail-panel{ position:static !important; order:-1 !important; width:100% !important; }
   .menu-grid{ grid-template-columns:1fr !important; }
   .menu-page-stack .menu-main-section{ padding-top:0; }
 }
 
 @media (max-width:640px){
-  .detail-panel{ position:static; width:100%; }
+  /* .detail-panel стикира се вече чрез правилото в @media (max-width:900px) по-горе */
 }
 
 @media (max-width:480px){

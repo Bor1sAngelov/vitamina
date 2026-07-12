@@ -1144,6 +1144,30 @@ function initMenu(){
       builder.defaultSelected.forEach(id=>{ selected[id] = (selected[id]||0) + 1; });
     }
     let selectedDressing = builder.hasDressing ? builder.dressings[builder.dressings.length ? 0 : 0].id : null;
+    let size = "large"; // само за салатата (builder.hasSmallSize) — "large" | "small"
+
+    /* Коригира цената на съставка според избрания размер. Само салатата
+       поддържа "малка" версия; яйце и авокадо не могат да се разполовят,
+       затова остават на пълна цена дори при малка салата. */
+    function ingPrice(ing){
+      if(builder.hasSmallSize && size === "small" && !(builder.noHalfIds && builder.noHalfIds.includes(ing.id))){
+        return ing.price / 2;
+      }
+      return ing.price;
+    }
+    function ingNut(ing){
+      if(builder.hasSmallSize && size === "small" && ing.nut && !(builder.noHalfIds && builder.noHalfIds.includes(ing.id))){
+        return { kcal: ing.nut.kcal/2, p: ing.nut.p/2, c: ing.nut.c/2, f: ing.nut.f/2 };
+      }
+      return ing.nut;
+    }
+    function currentMinPrice(){
+      if(builder.hasSmallSize && size === "small" && builder.smallMinPrice != null) return builder.smallMinPrice;
+      return builder.minPrice || 0;
+    }
+    function sizeSuffix(){
+      return builder.hasSmallSize ? (size === "small" ? " (малка)" : " (голяма)") : "";
+    }
 
     function selectedCount(){ return Object.values(selected).reduce((s,q)=>s+q,0); }
     /* Връща общата сума в ЕВРО. Всяка единична цена (съставка/дресинг)
@@ -1155,7 +1179,7 @@ function initMenu(){
       let total = 0;
       Object.entries(selected).forEach(([id,qty])=>{
         const ing = builder.ingredients.find(i=>i.id===id);
-        if(ing) total += unitEUR(ing.price) * qty;
+        if(ing) total += unitEUR(ingPrice(ing)) * qty;
       });
       if(builder.hasDressing && selectedDressing){
         const d = builder.dressings.find(x=>x.id===selectedDressing);
@@ -1168,12 +1192,13 @@ function initMenu(){
        добавянето в количката, докато изборът не я достигне (виж isBelowMin).
        selectedTotal() вече връща директно евро, затова тук няма нужда
        от toEUR(). */
-    function isBelowMin(){ return selectedTotal() < (builder.minPrice || 0) - 0.005; }
+    function isBelowMin(){ return selectedTotal() < currentMinPrice() - 0.005; }
     function selectedNutrition(){
       let kcal=0, p=0, c=0, f=0;
       Object.entries(selected).forEach(([id,qty])=>{
         const ing = builder.ingredients.find(i=>i.id===id);
-        if(ing && ing.nut){ kcal += ing.nut.kcal*qty; p += ing.nut.p*qty; c += ing.nut.c*qty; f += ing.nut.f*qty; }
+        const n = ing ? ingNut(ing) : null;
+        if(n){ kcal += n.kcal*qty; p += n.p*qty; c += n.c*qty; f += n.f*qty; }
       });
       if(builder.hasDressing && selectedDressing){
         const d = builder.dressings.find(x=>x.id===selectedDressing);
@@ -1187,13 +1212,22 @@ function initMenu(){
         <div class="builder-wrap">
           <div>
             <p style="color:var(--charcoal-soft); margin-bottom:24px;">${builder.intro}</p>
+            ${builder.hasSmallSize ? `
             <div class="builder-step">
-              <h4><span class="num">1</span>Избери съставки</h4>
+              <h4><span class="num">1</span>Избери размер</h4>
+              <div class="size-toggle" data-size-toggle-salad>
+                <button type="button" class="size-btn ${size==='large'?'active':''}" data-diy-size="large">Голяма салата</button>
+                <button type="button" class="size-btn ${size==='small'?'active':''}" data-diy-size="small">Малка салата</button>
+              </div>
+              ${size==='small' ? `<p class="calc-note" style="margin-top:8px;">Яйце и авокадо не могат да се разполовят, затова остават на пълна цена и при малка салата.</p>` : ""}
+            </div>` : ""}
+            <div class="builder-step">
+              <h4><span class="num">${builder.hasSmallSize ? 2 : 1}</span>Избери съставки</h4>
               <div class="ingredient-grid" id="ingGrid">
                 ${builder.ingredients.map(ing=>`
                   <div class="ingredient ${selected[ing.id] ? 'active':''}" data-id="${ing.id}">
                     <div class="name">${escapeHtml(ing.name)}</div>
-                    <div class="meta">${ing.price>0 ? fmt(ing.price)+" €" : "включено"}</div>
+                    <div class="meta">${ing.price>0 ? fmt(ingPrice(ing))+" €"+(builder.hasSmallSize && size==='small' && builder.noHalfIds && builder.noHalfIds.includes(ing.id) ? " · пълна цена" : "") : "включено"}</div>
                     <span class="ing-qty" style="${selected[ing.id]>1 ? '' : 'display:none;'}">${selected[ing.id]>1 ? `×${selected[ing.id]}` : ""}</span>
                   </div>
                 `).join("")}
@@ -1201,7 +1235,7 @@ function initMenu(){
             </div>
             ${builder.hasDressing ? `
             <div class="builder-step">
-              <h4><span class="num">2</span>Избери ${builder.dressingLabel || "дресинг"}</h4>
+              <h4><span class="num">${builder.hasSmallSize ? 3 : 2}</span>Избери ${builder.dressingLabel || "дресинг"}</h4>
               <select id="dressingSelect" class="dressing-select">
                 ${builder.dressings.map(d=>`<option value="${d.id}">${d.name}${d.price>0 ? ` (+${fmt(d.price)} €)` : ""}</option>`).join("")}
               </select>
@@ -1241,6 +1275,16 @@ function initMenu(){
       if(dressingSelect){
         dressingSelect.value = selectedDressing;
         dressingSelect.addEventListener("change", ()=>{ selectedDressing = dressingSelect.value; renderSummary(); });
+      }
+
+      if(builder.hasSmallSize){
+        mount.querySelectorAll("[data-diy-size]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            if(btn.dataset.diySize === size) return;
+            size = btn.dataset.diySize;
+            renderGroups();
+          });
+        });
       }
 
       /* Обновява визуалното състояние (активен + баджче ×N) на карта
@@ -1297,7 +1341,7 @@ function initMenu(){
           return;
         }
         if(isBelowMin()){
-          showToast(`Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()} е ${builder.minPrice.toFixed(2)} € — добави още съставки (сега имаш ${selectedTotal().toFixed(2)} €).`);
+          showToast(`Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()}${sizeSuffix()} е ${currentMinPrice().toFixed(2)} € — добави още съставки (сега имаш ${selectedTotal().toFixed(2)} €).`);
           return;
         }
         const names = Object.keys(selected).map(id => builder.ingredients.find(i=>i.id===id).name);
@@ -1307,14 +1351,16 @@ function initMenu(){
           if(d && d.id !== "no-dressing") details += ` · ${builder.dressingLabel || "дресинг"}: ${d.name}`;
         }
         const note = await askForItemNote();
-        addToCart({ name: builder.label, price: selectedTotal() * EUR_RATE, details, nut: selectedNutrition(), note });
-        showToast(`${builder.label} е добавена в количката 🛒`);
+        const cartName = builder.label + sizeSuffix();
+        addToCart({ name: cartName, price: selectedTotal() * EUR_RATE, details, nut: selectedNutrition(), note });
+        showToast(`${cartName} е добавена в количката 🛒`);
         Object.keys(selected).forEach(k=>delete selected[k]);
         renderGroups();
       });
 
       resetBtn.addEventListener("click", ()=>{
         Object.keys(selected).forEach(k=>delete selected[k]);
+        if(builder.hasSmallSize) size = "large";
         renderGroups();
       });
 
@@ -1328,7 +1374,7 @@ function initMenu(){
           bowlLines.innerHTML = ids.map(id=>{
             const ing = builder.ingredients.find(i=>i.id===id);
             const qty = selected[id];
-            const unitPrice = unitEUR(ing.price);
+            const unitPrice = unitEUR(ingPrice(ing));
             const lineTotal = Math.round(unitPrice * qty * 100) / 100;
             return `<div class="bowl-line">
               <span>${escapeHtml(ing.name)}${qty>1 ? ` × ${qty}` : ""}</span>
@@ -1343,8 +1389,9 @@ function initMenu(){
         const minNoteEl = mount.querySelector("#bowlMinNote");
         if(isBelowMin()){
           minNoteEl.style.display = "block";
-          const missing = builder.minPrice - selectedTotal();
-          minNoteEl.textContent = `Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()} е ${builder.minPrice.toFixed(2)} € — добави още ${missing.toFixed(2)} €, за да продължиш.`;
+          const minP = currentMinPrice();
+          const missing = minP - selectedTotal();
+          minNoteEl.textContent = `Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()}${sizeSuffix()} е ${minP.toFixed(2)} € — добави още ${missing.toFixed(2)} €, за да продължиш.`;
         } else {
           minNoteEl.style.display = "none";
         }
@@ -1368,6 +1415,34 @@ function initMenu(){
     renderTabs();
     renderItems();
   });
+
+  /* Панелът с избрания готов продукт (#detailPanel) е "sticky" — докато
+     скролираме списъка, той увисва залепен най-отгоре. За да не заема
+     твърде много място в залепнало състояние, добавяме клас "is-stuck"
+     само когато панелът РЕАЛНО е залепен (а не в естествената си позиция
+     в потока) — CSS-ът тогава скрива снимката, за да остане компактен.
+     Работи независимо от точния top офсет на различните breakpoint-и,
+     защото го чете динамично от изчисления CSS стил. */
+  function initDetailPanelStickyCompact(){
+    const panel = document.getElementById("detailPanel");
+    if(!panel) return;
+    let ticking = false;
+    function check(){
+      ticking = false;
+      const cs = getComputedStyle(panel);
+      if(cs.position !== "sticky"){ panel.classList.remove("is-stuck"); return; }
+      const topOffset = parseInt(cs.top, 10) || 0;
+      const rect = panel.getBoundingClientRect();
+      panel.classList.toggle("is-stuck", rect.top <= topOffset + 1);
+    }
+    function onScroll(){
+      if(!ticking){ ticking = true; requestAnimationFrame(check); }
+    }
+    check();
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+  }
+  initDetailPanelStickyCompact();
 
   renderTabs();
   renderItems();

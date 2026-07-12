@@ -204,13 +204,13 @@ const MENU_DATA = [
   ]},
 
   { category:"Десерти", icon:"🍓", items:[
-    { id:"des1", name:"Кисело мляко с чия и плодове",            price:5.87, weight:"300 г", photo:"img/desserts/kiselo-mliako-chia.jpg", desc:"Кисело мляко, чия и свежи сезонни плодове.", nut:{kcal:188,p:10,c:11,f:11} },
+    { id:"des1", name:"Кисело мляко с чиа и плодове",            price:5.87, weight:"300 г", photo:"img/desserts/kiselo-mliako-chia.jpg", desc:"Кисело мляко, чиа и свежи сезонни плодове.", nut:{kcal:188,p:10,c:11,f:11} },
     { id:"des2", name:"Гръцки йогурт с боровинки и фурми",       price:6.85, weight:"300 г", photo:"img/desserts/grazki-yogurt.jpg", desc:"Йогурт, сушени боровинки, фурми и хрупкаво мюсли.", nut:{kcal:264,p:8,c:28,f:14}, nutNote:"калориите са без мюслите" },
     { id:"des3", name:"Лимонено изкушение",                      price:6.85, weight:"200 г", photo:"img/desserts/limoneno-izkushenie.jpg", desc:"Лимонов сок, лайм, мляко, маскарпоне, лимонова кора и бисквити.", nut:{kcal:752,p:19,c:77,f:45} },
     { id:"des4", name:"Житно-плодова салата",                    price:5.87, weight:"200 г", photo:"img/desserts/zhitno-plodova.jpg", desc:"Сварено жито, ябълки, стафиди, орехи, портокалова кора и канела.", nut:{kcal:431,p:8,c:67,f:17} },
     { id:"des5", name:"Пудинг с тиква",                          price:6.85, weight:"200 г", photo:"img/desserts/puding-tikva.jpg", desc:"Тиква, захар, крема сирене, канела и чаени бисквити. *Сезонен.", nut:{kcal:292,p:5,c:46,f:61} },
     { id:"des6", name:"Кокосови бонбони",                        price:7.82, weight:"12 бр.", photo:"img/desserts/kokosovi-bonboni.jpg", desc:"Кокосови стърготини, кокосово мляко, кокосово масло, кондензирано мляко и ванилия.", nut:{kcal:552,p:12,c:48,f:36} },
-    { id:"des7", name:"Мус с банан и чия",                       price:6.85, weight:"200 г", photo:"img/desserts/mus-banan-chia.jpg", desc:"Банан, чия, кокосово мляко, черен шоколад, стевия и кокосови стърготини.", nut:{kcal:344,p:5,c:31,f:27} },
+    { id:"des7", name:"Мус с банан и чиа",                       price:6.85, weight:"200 г", photo:"img/desserts/mus-banan-chia.jpg", desc:"Банан, чиа, кокосово мляко, черен шоколад, стевия и кокосови стърготини.", nut:{kcal:344,p:5,c:31,f:27} },
     { id:"des8", name:"Шоколадови трюфели",                      price:7.82, weight:"12 бр., кутия", photo:"img/desserts/shokoladovi-tryufeli.jpg", desc:"Орехови ядки, стафиди, кокосово мляко, черен шоколад, какаови бисквити и кокосово масло.", nut:{kcal:552,p:7,c:60,f:36} },
     { id:"des9", name:"Лятна хармония",                          price:6.85, weight:"200 г", photo:"img/desserts/harmonia.jpg", desc:"Скир, маскарпоне, фурми, кокосови стърготини, мед, ванилия и сезонни плодове.", nut:{kcal:620,p:14,c:45,f:42} },
   ]},
@@ -347,12 +347,19 @@ const BUILDERS = {
   salad: {
     label:"Салата — направи си сам",
     icon:"🥗",
-    intro:"Избери съставки и дресинг по избор (или без дресинг). Цената тръгва от 0 € и расте с всяка добавена съставка — точно както на място в обекта. Минималната стойност за салата е 3.30 €.",
+    intro:"Избери размер, съставки и дресинг по избор (или без дресинг). Цената тръгва от 0 € и расте с всяка добавена съставка — точно както на място в обекта. Минималната стойност е 3.30 € както за голяма, така и за малка салата.",
     minPrice:3.30,
     hasDressing:true,
     ingredients: DIY_INGREDIENTS_SALAD,
     dressings: DIY_DRESSING_OPTIONS,
     finishLabel:"Добави салатата в количката",
+    /* Малка салата: наполовина цена (и хранителни стойности) на всяка
+       съставка спрямо голямата, освен яйце и авокадо — те не могат да
+       се разполовяват физически, затова остават на пълна цена/стойност
+       дори при избрана малка салата. */
+    hasSmallSize:true,
+    smallMinPrice:3.30,
+    noHalfIds:["i-egg","i-avocado"],
   },
   bowl: {
     label:"Купа — направи си сам",
