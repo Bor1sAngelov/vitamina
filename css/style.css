@@ -841,6 +841,13 @@ table.data-table tr:last-child td{ border-bottom:none; }
   background:var(--green-100); border-radius:16px;
 }
 
+/* Лента за връзка с термо принтера в админ панела */
+.printer-bar{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-bottom:8px; padding:14px 18px;
+  background:var(--cream-card); border:1.5px solid var(--line); border-radius:16px;
+}
+
 .pause-overlay{
   position:fixed; inset:0; z-index:1100;
   background:rgba(23,63,41,0.45);

@@ -68,6 +68,18 @@
             <span class="status-pill status-done" id="orderingPauseStatus">✅ Поръчките са отворени</span>
             <button class="btn btn-danger btn-sm" id="orderingPauseToggle">🚫 Затвори поръчките</button>
           </div>
+
+          <div class="printer-bar">
+            <span class="status-pill status-new" id="printerStatus">⚪ Принтерът не е свързан.</span>
+            <button class="btn btn-primary btn-sm" id="printerConnectBtn">🖨️ Свържи термо принтер</button>
+            <button class="btn btn-outline btn-sm" id="printerTestBtn" style="display:none;">Тестов печат</button>
+            <button class="btn btn-ghost btn-sm" id="printerDisconnectBtn" style="display:none;">Изключи принтера</button>
+          </div>
+          <p class="form-note" style="margin:-8px 0 20px; max-width:640px;">
+            Свържи термо принтера (USB/сериен) само веднъж — при всяка нова поръчка бележка ще се разпечата
+            автоматично (име, час за готовност, състав на поръчката, телефон). Работи в Chrome или Edge на
+            компютъра/таблета, на който стои отворен този панел.
+          </p>
           <div class="stat-row">
             <div class="stat-card"><div class="num" id="statOrdersTotal">0</div><div class="lab">Общо поръчки</div></div>
             <div class="stat-card"><div class="num" id="statOrdersNew">0</div><div class="lab">Нови поръчки</div></div>
