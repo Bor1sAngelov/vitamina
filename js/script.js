@@ -1344,7 +1344,11 @@ function initMenu(){
           showToast(`Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()}${sizeSuffix()} е ${currentMinPrice().toFixed(2)} € — добави още съставки (сега имаш ${selectedTotal().toFixed(2)} €).`);
           return;
         }
-        const names = Object.keys(selected).map(id => builder.ingredients.find(i=>i.id===id).name);
+        const names = Object.keys(selected).map(id => {
+          const ing = builder.ingredients.find(i=>i.id===id);
+          const qty = selected[id];
+          return qty > 1 ? `${ing.name} ×${qty}` : ing.name;
+        });
         let details = names.join(", ");
         if(builder.hasDressing && selectedDressing){
           const d = builder.dressings.find(x=>x.id===selectedDressing);
