@@ -397,209 +397,89 @@ function playOrderChime(){
    само браузърът, отворен на компютъра/таблета до принтера в обекта.
    При нова поръчка (виж checkForNewOrders по-долу) автоматично се разпечатва
    бележка с име, телефон, час за готовност и състав на поръчката.
-*/
-const THERMAL_PRINTER_REMEMBER_KEY = "vitamina_thermal_printer_v1";
-let thermalPrinterPort = null;
-let thermalPrinterWriter = null;
 
-function isWebSerialSupported(){ return typeof navigator !== "undefined" && "serial" in navigator; }
+   ЗАБЕЛЕЖКА: печатаме през вече инсталирания в Windows/Mac принтер (същия,
+   през който мина тестовата разпечатка при инсталацията на драйвера), а не
+   през директна USB/сериен достъп — така работи независимо какъв точно
+   драйвер е инсталиран от диска на принтера.
+*/
+function isPrintingSupported(){ return typeof window !== "undefined" && typeof window.print === "function"; }
 
 function updatePrinterStatusUI(){
   const statusEl = document.getElementById("printerStatus");
   if(!statusEl) return;
-  const connectBtn = document.getElementById("printerConnectBtn");
-  const disconnectBtn = document.getElementById("printerDisconnectBtn");
   const testBtn = document.getElementById("printerTestBtn");
-  const connected = !!thermalPrinterWriter;
-  if(connected){
-    statusEl.textContent = "🟢 Принтерът е свързан — нови поръчки ще се печатат автоматично.";
+  if(isPrintingSupported()){
+    statusEl.textContent = "🟢 Готово за печат — увери се, че термо принтерът е зададен като принтер по подразбиране на този компютър.";
     statusEl.className = "status-pill status-done";
-  } else if(isWebSerialSupported()){
-    statusEl.textContent = "⚪ Принтерът не е свързан.";
-    statusEl.className = "status-pill status-new";
   } else {
-    statusEl.textContent = "⚠️ Браузърът не поддържа връзка с принтер — отвори панела в Chrome или Edge на компютър.";
+    statusEl.textContent = "⚠️ Този браузър не поддържа печат.";
     statusEl.className = "status-pill status-delayed";
   }
-  if(connectBtn) connectBtn.style.display = connected ? "none" : "inline-flex";
-  if(disconnectBtn) disconnectBtn.style.display = connected ? "inline-flex" : "none";
-  if(testBtn) testBtn.style.display = connected ? "inline-flex" : "none";
+  if(testBtn) testBtn.style.display = "inline-flex";
 }
 
-async function connectThermalPrinter(){
-  if(!isWebSerialSupported()){
-    showToast("Браузърът не поддържа директно свързване с принтер — използвай Chrome или Edge на компютър.");
-    return false;
-  }
-  try{
-    const port = await navigator.serial.requestPort();
-    await port.open({ baudRate: 9600 });
-    thermalPrinterPort = port;
-    thermalPrinterWriter = port.writable.getWriter();
-    localStorage.setItem(THERMAL_PRINTER_REMEMBER_KEY, "1");
-    updatePrinterStatusUI();
-    showToast("Термо принтерът е свързан ✅");
-    return true;
-  }catch(err){
-    console.warn("Неуспешно свързване с термо принтера:", err);
-    showToast("Не успяхме да се свържем с принтера.");
-    return false;
-  }
+function buildReceiptHtml(order){
+  const itemsHtml = (order.items || []).map(it=>{
+    let row = `<div class="receipt-row">${escapeHtml(String(it.qty))} x ${escapeHtml(it.name || "")}</div>`;
+    if(it.details) row += `<div class="receipt-row">&nbsp;&nbsp;(${escapeHtml(it.details)})</div>`;
+    if(it.note) row += `<div class="receipt-row">&nbsp;&nbsp;Бележка: ${escapeHtml(it.note)}</div>`;
+    return row;
+  }).join("");
+
+  return `
+    <h1>ВИТАМИНА</h1>
+    <p class="receipt-sub">Салатен бар · Враца</p>
+    <div class="receipt-line"></div>
+    <div class="receipt-row"><span class="receipt-label">Поръчка №:</span> ${escapeHtml(String(order.number))}</div>
+    <div class="receipt-row"><span class="receipt-label">Дата:</span> ${escapeHtml(formatDate(order.date))}</div>
+    <div class="receipt-line"></div>
+    <div class="receipt-row"><span class="receipt-label">Име:</span> ${escapeHtml(order.name || "—")}</div>
+    <div class="receipt-row"><span class="receipt-label">Телефон:</span> ${escapeHtml(order.phone || "—")}</div>
+    <div class="receipt-row"><span class="receipt-label">Час за готовност:</span> ${escapeHtml(order.time ? order.time : "възможно най-скоро")}</div>
+    <div class="receipt-line"></div>
+    <div class="receipt-row receipt-label">Състав на поръчката:</div>
+    ${itemsHtml}
+    ${order.note ? `<div class="receipt-line"></div><div class="receipt-row"><span class="receipt-label">Бележка към поръчката:</span> ${escapeHtml(order.note)}</div>` : ""}
+    <div class="receipt-line"></div>
+    <div class="receipt-row receipt-total">Обща сума: ${fmt(order.total)} EUR</div>
+    <div class="receipt-line"></div>
+    <p class="receipt-sub">Благодарим ви!</p>
+  `;
 }
 
-async function tryAutoReconnectThermalPrinter(){
-  if(!isWebSerialSupported()) return;
-  if(localStorage.getItem(THERMAL_PRINTER_REMEMBER_KEY) !== "1") return;
-  if(thermalPrinterWriter) return;
-  try{
-    const ports = await navigator.serial.getPorts();
-    if(!ports.length) return;
-    const port = ports[0];
-    await port.open({ baudRate: 9600 });
-    thermalPrinterPort = port;
-    thermalPrinterWriter = port.writable.getWriter();
-    updatePrinterStatusUI();
-  }catch(err){
-    /* тих провал — принтерът ще трябва да се свърже ръчно отново */
-  }
-}
-
-async function disconnectThermalPrinter(){
-  try{
-    if(thermalPrinterWriter){ thermalPrinterWriter.releaseLock(); thermalPrinterWriter = null; }
-    if(thermalPrinterPort){ await thermalPrinterPort.close(); thermalPrinterPort = null; }
-  }catch(err){ /* тих провал */ }
-  localStorage.removeItem(THERMAL_PRINTER_REMEMBER_KEY);
-  updatePrinterStatusUI();
-  showToast("Принтерът е изключен.");
-}
-
-/* ---- CP866 (Cyrillic) кодиране на текста за ESC/POS принтера ---- */
-const CP866_UPPER = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-const CP866_LOWER_A_P = "абвгдежзийклмноп";
-const CP866_LOWER_R_YA = "рстуфхцчшщъыьэюя";
-function encodeCp866(text){
-  const bytes = [];
-  for(const ch of String(text == null ? "" : text)){
-    if(ch === "€"){ "EUR".split("").forEach(c=>bytes.push(c.charCodeAt(0))); continue; }
-    if(ch === "Ё"){ bytes.push(0xF0); continue; }
-    if(ch === "ё"){ bytes.push(0xF1); continue; }
-    const code = ch.charCodeAt(0);
-    if(code < 128){ bytes.push(code); continue; }
-    let idx = CP866_UPPER.indexOf(ch);
-    if(idx !== -1){ bytes.push(0x80 + idx); continue; }
-    idx = CP866_LOWER_A_P.indexOf(ch);
-    if(idx !== -1){ bytes.push(0xA0 + idx); continue; }
-    idx = CP866_LOWER_R_YA.indexOf(ch);
-    if(idx !== -1){ bytes.push(0xE0 + idx); continue; }
-    bytes.push(0x3F); // "?" за непознат символ
-  }
-  return bytes;
-}
-
-/* ---- ESC/POS команди ---- */
-const ESCPOS_ESC = 0x1B, ESCPOS_GS = 0x1D;
-function escposInit(){ return [ESCPOS_ESC, 0x40]; }
-function escposCodepageCyrillic(){ return [ESCPOS_ESC, 0x74, 17]; } // CP866 (Cyrillic 2) — стандартен код за ESC/POS принтери
-function escposAlign(n){ return [ESCPOS_ESC, 0x61, n]; } // 0 ляво, 1 център, 2 дясно
-function escposBold(on){ return [ESCPOS_ESC, 0x45, on ? 1 : 0]; }
-function escposDoubleSize(on){ return [ESCPOS_GS, 0x21, on ? 0x11 : 0x00]; }
-function escposCut(){ return [0x0A,0x0A,0x0A, ESCPOS_GS, 0x56, 1]; } // подаване на хартия + частично рязане
-
-function buildOrderReceiptBytes(order){
-  const bytes = [];
-  const push = arr => { for(const b of arr) bytes.push(b); };
-  const line = (text="") => { push(encodeCp866(text)); push([0x0A]); };
-
-  push(escposInit());
-  push(escposCodepageCyrillic());
-
-  push(escposAlign(1));
-  push(escposBold(true)); push(escposDoubleSize(true));
-  line("ВИТАМИНА");
-  push(escposDoubleSize(false));
-  line("Салатен бар · Враца");
-  push(escposBold(false));
-  line("");
-
-  push(escposAlign(0));
-  push(escposBold(true));
-  line(`Поръчка №${order.number}`);
-  push(escposBold(false));
-  line(`Дата: ${formatDate(order.date)}`);
-  line("");
-
-  push(escposBold(true)); line("Име:"); push(escposBold(false));
-  line(order.name || "—");
-
-  push(escposBold(true)); line("Телефон:"); push(escposBold(false));
-  line(order.phone || "—");
-
-  push(escposBold(true)); line("Час за готовност:"); push(escposBold(false));
-  line(order.time ? order.time : "възможно най-скоро");
-  line("");
-
-  push(escposBold(true));
-  line("Състав на поръчката:");
-  push(escposBold(false));
-  (order.items || []).forEach(it=>{
-    line(`${it.qty} x ${it.name}`);
-    if(it.details) line(`   (${it.details})`);
-    if(it.note) line(`   Бележка: ${it.note}`);
-  });
-  line("");
-
-  if(order.note){
-    push(escposBold(true)); line("Бележка към поръчката:"); push(escposBold(false));
-    line(order.note);
-    line("");
-  }
-
-  push(escposBold(true));
-  line(`Обща сума: ${fmt(order.total)} EUR`);
-  push(escposBold(false));
-  line("");
-
-  push(escposAlign(1));
-  line("Благодарим ви!");
-  push(escposCut());
-
-  return new Uint8Array(bytes);
-}
-
+let printQueueBusy = false;
 async function printOrderReceipt(order){
-  if(!order) return false;
-  if(!thermalPrinterWriter){
-    return false; // принтерът не е свързан — печат не се очаква
-  }
+  if(!order || !isPrintingSupported()) return false;
+  const container = document.getElementById("printReceipt");
+  if(!container) return false;
+  // изчакваме предишния печат да приключи, за да не се разбъркат бележките
+  let waited = 0;
+  while(printQueueBusy && waited < 5000){ await new Promise(r=>setTimeout(r, 200)); waited += 200; }
+  printQueueBusy = true;
   try{
-    await thermalPrinterWriter.write(buildOrderReceiptBytes(order));
+    container.innerHTML = buildReceiptHtml(order);
+    window.print();
     return true;
   }catch(err){
     console.warn("Грешка при печат на поръчка:", err);
     showToast("Възникна грешка при печата — провери принтера.");
     return false;
+  }finally{
+    setTimeout(()=>{ printQueueBusy = false; }, 800);
   }
 }
 
 function printTestReceipt(){
-  if(!thermalPrinterWriter){ showToast("Първо свържи принтера."); return; }
-  const bytes = [];
-  const push = arr => { for(const b of arr) bytes.push(b); };
-  const line = (text="") => { push(encodeCp866(text)); push([0x0A]); };
-  push(escposInit());
-  push(escposCodepageCyrillic());
-  push(escposAlign(1));
-  push(escposBold(true));
-  line("ВИТАМИНА — тестов печат");
-  push(escposBold(false));
-  line("");
-  line("Ако виждаш този текст правилно,");
-  line("принтерът е готов за поръчки ✅");
-  push(escposCut());
-  thermalPrinterWriter.write(new Uint8Array(bytes)).catch(err=>{
-    console.warn(err);
-    showToast("Грешка при тестовия печат.");
+  printOrderReceipt({
+    number: "ТЕСТ",
+    date: new Date().toISOString(),
+    name: "Тестова поръчка",
+    phone: "0000 000 000",
+    time: "възможно най-скоро",
+    items: [{ qty: 1, name: "Тестова салата", details: "с тестова заливка" }],
+    note: "",
+    total: 0
   });
 }
 
@@ -2050,13 +1930,10 @@ function initAdmin(){
     renderVisitorsAdmin();
     renderOrderingPauseUI();
     updatePrinterStatusUI();
-    tryAutoReconnectThermalPrinter();
     startOrderWatcher();
     startApplicationWatcher();
   }
 
-  document.getElementById("printerConnectBtn")?.addEventListener("click", connectThermalPrinter);
-  document.getElementById("printerDisconnectBtn")?.addEventListener("click", disconnectThermalPrinter);
   document.getElementById("printerTestBtn")?.addEventListener("click", printTestReceipt);
 
   checkAdminSupabaseSession().then(async loggedIn => { 

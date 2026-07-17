@@ -70,15 +70,14 @@
           </div>
 
           <div class="printer-bar">
-            <span class="status-pill status-new" id="printerStatus">⚪ Принтерът не е свързан.</span>
-            <button class="btn btn-primary btn-sm" id="printerConnectBtn">🖨️ Свържи термо принтер</button>
-            <button class="btn btn-outline btn-sm" id="printerTestBtn" style="display:none;">Тестов печат</button>
-            <button class="btn btn-ghost btn-sm" id="printerDisconnectBtn" style="display:none;">Изключи принтера</button>
+            <span class="status-pill status-done" id="printerStatus">🟢 Готово за печат — увери се, че термо принтерът е зададен като принтер по подразбиране на този компютър.</span>
+            <button class="btn btn-outline btn-sm" id="printerTestBtn">Тестов печат</button>
           </div>
           <p class="form-note" style="margin:-8px 0 20px; max-width:640px;">
-            Свържи термо принтера (USB/сериен) само веднъж — при всяка нова поръчка бележка ще се разпечата
-            автоматично (име, час за готовност, състав на поръчката, телефон). Работи в Chrome или Edge на
-            компютъра/таблета, на който стои отворен този панел.
+            Всяка нова поръчка автоматично се изпраща за печат към принтера по подразбиране на компютъра/таблета,
+            на който стои отворен този панел (термо принтерът трябва да е инсталиран веднъж чрез диска с драйвери
+            и зададен като принтер по подразбиране в Windows). При печат за момент ще се появи диалогът за печат
+            на браузъра — просто потвърди с Enter.
           </p>
           <div class="stat-row">
             <div class="stat-card"><div class="num" id="statOrdersTotal">0</div><div class="lab">Общо поръчки</div></div>
@@ -154,6 +153,8 @@
     </div>
   </div>
 </footer>
+
+<div id="printReceipt"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/data.js"></script>

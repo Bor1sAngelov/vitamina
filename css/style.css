@@ -848,6 +848,29 @@ table.data-table tr:last-child td{ border-bottom:none; }
   background:var(--cream-card); border:1.5px solid var(--line); border-radius:16px;
 }
 
+/* Скрит на екрана контейнер, който се форматира като касова бележка само при печат */
+#printReceipt{ display:none; }
+@media print{
+  body *{ visibility:hidden; }
+  #printReceipt, #printReceipt *{ visibility:visible; }
+  #printReceipt{
+    display:block;
+    position:absolute; top:0; left:0;
+    width:76mm;
+    padding:4mm;
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    color:#000;
+  }
+  #printReceipt h1{ font-size:16px; text-align:center; margin:0 0 2px; }
+  #printReceipt .receipt-sub{ text-align:center; font-size:11px; margin:0 0 8px; }
+  #printReceipt .receipt-line{ border-top:1px dashed #000; margin:6px 0; }
+  #printReceipt .receipt-row{ margin:2px 0; }
+  #printReceipt .receipt-label{ font-weight:700; }
+  #printReceipt .receipt-total{ font-weight:700; font-size:14px; margin-top:6px; }
+  @page{ margin:0; size:80mm auto; }
+}
+
 .pause-overlay{
   position:fixed; inset:0; z-index:1100;
   background:rgba(23,63,41,0.45);
