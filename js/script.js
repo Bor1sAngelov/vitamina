@@ -302,6 +302,16 @@ async function getOrderingPausedFromSupabase(){
   if(error) return false;
   return data?.value?.paused === true;
 }
+async function isOrderingPausedNow(){
+  // Проверява директно в Supabase (валидно за всяко устройство/профил), не само локалния кеш,
+  // защото localStorage се обновява само след realtime събитие, а не при първо зареждане.
+  if(supabaseReady && supabaseClient){
+    const paused = await getOrderingPausedFromSupabase();
+    localStorage.setItem(ORDERING_PAUSED_KEY, JSON.stringify({ paused, updatedAt: Date.now() }));
+    return paused;
+  }
+  return isOrderingPausedByAdmin();
+}
 function showOrderingPausedOverlay(){
   if(document.querySelector(".pause-overlay")) return;
   const overlay = document.createElement("div");
@@ -1551,6 +1561,7 @@ function initCart(){
   if(!document.getElementById("cartList")) return; // не сме на страницата с количката
 
   if(isOrderingPausedByAdmin()) showOrderingPausedOverlay();
+  isOrderingPausedNow().then(paused=>{ if(paused) showOrderingPausedOverlay(); });
   attachOrderingPausedListener((paused)=>{ if(paused) showOrderingPausedOverlay(); });
 
   const banner = document.getElementById("dailyBanner");
@@ -1684,7 +1695,7 @@ function initCart(){
   if(form){
     form.addEventListener("submit", async (e)=>{
       e.preventDefault();
-      if(isOrderingPausedByAdmin()){
+      if(await isOrderingPausedNow()){
         showOrderingPausedOverlay();
         return;
       }
