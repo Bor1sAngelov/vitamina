@@ -53,9 +53,15 @@ const WORKING_HOURS = {
 };
 
 /* Поръчки се приемат само между отварянето и (затварянето минус
-   този брой минути) — т.е. най-късно 15 мин. преди края на
-   работния ден, и никога извън работно време. */
-const ORDER_CUTOFF_MINUTES = 15;
+   този брой минути) — т.е. клиентът може да ПОДАВА поръчка най-късно
+   толкова минути преди края на работния ден. */
+const ORDER_CUTOFF_MINUTES = 10;
+
+/* Най-късният час, който предлагаме за ВЗЕМАНЕ на готовата поръчка —
+   толкова минути преди края на работния ден (може да е по-малко от
+   ORDER_CUTOFF_MINUTES, за да остане малко луфт между последната
+   поръчка и реалното затваряне). */
+const PICKUP_CUTOFF_MINUTES = 5;
 
 /* Клиентът трябва да изчака поне толкова минути от момента на
    поръчката, преди да мине да си вземе поръчката (нужно е време
@@ -83,7 +89,11 @@ function getOrderingWindow(date){
   const hours = getHoursFor(date);
   const openMin = timeStrToMinutes(hours.open);
   const closeMin = timeStrToMinutes(hours.close);
-  return { hours, openMin, closeMin, cutoffMin: closeMin - ORDER_CUTOFF_MINUTES };
+  return {
+    hours, openMin, closeMin,
+    cutoffMin: closeMin - ORDER_CUTOFF_MINUTES,
+    pickupCutoffMin: closeMin - PICKUP_CUTOFF_MINUTES,
+  };
 }
 function isOrderingOpenNow(date = new Date()){
   const { openMin, cutoffMin } = getOrderingWindow(date);
@@ -115,15 +125,22 @@ function getOrderingStatusMessage(date = new Date()){
    getOrderingWindow). Ако денят вече е приключил за поръчки, връща
    празен списък. */
 function getAvailablePickupSlots(date = new Date()){
-  const { openMin, cutoffMin } = getOrderingWindow(date);
+  const { openMin, pickupCutoffMin } = getOrderingWindow(date);
   const nowMin = date.getHours() * 60 + date.getMinutes();
 
   let earliest = Math.max(openMin, nowMin + MIN_PICKUP_WAIT_MINUTES);
   earliest = Math.ceil(earliest / TIME_SLOT_STEP_MINUTES) * TIME_SLOT_STEP_MINUTES;
 
   const slots = [];
-  for(let t = earliest; t <= cutoffMin; t += TIME_SLOT_STEP_MINUTES){
+  for(let t = earliest; t <= pickupCutoffMin; t += TIME_SLOT_STEP_MINUTES){
     slots.push(minutesToTimeStr(t));
+  }
+  // Добавяме и точния краен час за вземане (напр. 18:55), който може да не
+  // пада точно на стъпката от TIME_SLOT_STEP_MINUTES минути, но пак трябва
+  // да е избираем, стига да е достижим от текущия момент.
+  if(earliest <= pickupCutoffMin){
+    const lastSlot = minutesToTimeStr(pickupCutoffMin);
+    if(slots[slots.length - 1] !== lastSlot) slots.push(lastSlot);
   }
   return slots;
 }
@@ -181,11 +198,11 @@ const MENU_DATA = [
 
   { category:"Дресинги", icon:"🥄", items:[
     { id:"dr1",  name:"Млечен дресинг",     price:0.78, desc:"Кисело мляко, майонеза, сол, копър и чесън.", nut:{kcal:142,p:2,c:3,f:13} },
-    { id:"dr2",  name:"Лимонов дресинг",    price:0.78, desc:"Лимонов сок, зехтин, сол и чесън.", nut:{kcal:317,p:1,c:3,f:34} },
+    { id:"dr2",  name:"Лимонов дресинг",    price:1.17, desc:"Лимонов сок, зехтин, сол и чесън.", nut:{kcal:317,p:1,c:3,f:34} },
     { id:"dr3",  name:"Магданозен дресинг",price:0.78, desc:"Магданоз, сол, чесън, оцет, олио и захар.", nut:{kcal:65,p:1,c:4,f:5} },
     { id:"dr4",  name:"Дресинг Дженовезе", price:2.35, desc:"Босилек, чесън, зехтин, сол, индийско кашу и пармезан.", nut:{kcal:163,p:3,c:3,f:16} },
-    { id:"dr5",  name:"Медена горчица",    price:0.78, desc:"Горчица, мед, олио, оцет и сол.", nut:{kcal:424,p:2,c:11,f:41} },
-    { id:"dr6",  name:"Авокадо дресинг",   price:0.78, desc:"Авокадо, лимонов сок, майонеза, кисело мляко, сол и черен пипер.", nut:{kcal:88,p:1,c:2,f:8} },
+    { id:"dr5",  name:"Медена горчица",    price:1.17, desc:"Горчица, мед, олио, оцет и сол.", nut:{kcal:424,p:2,c:11,f:41} },
+    { id:"dr6",  name:"Авокадо дресинг",   price:1.17, desc:"Авокадо, лимонов сок, майонеза, кисело мляко, сол и черен пипер.", nut:{kcal:88,p:1,c:2,f:8} },
     { id:"dr7",  name:"Фреш лимон",        price:0.59, desc:"Прясно изцеден лимонов сок.", nut:{kcal:5,p:0,c:1,f:0} },
     { id:"dr8",  name:"Хумус",             price:1.17, desc:"Нахут, тахан, лимонов сок и подправки.", nut:{kcal:147,p:3,c:9,f:12} },
     { id:"dr9",  name:"Сладък тахан",      price:1.56, desc:"Пълнозърнест тахан с мед.", nut:{kcal:140,p:3,c:10,f:10} },
