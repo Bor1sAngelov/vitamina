@@ -1255,6 +1255,10 @@ function initMenu(){
        затова остават на пълна цена дори при малка салата. */
     function ingPrice(ing){
       if(builder.hasSmallSize && size === "small" && !(builder.noHalfIds && builder.noHalfIds.includes(ing.id))){
+        // Половин доза = половин цена, ОСВЕН за съставките, чиято пълна
+        // доза е 0.70 € (1.37 лв) — при тях половин доза е фиксирана на
+        // 0.40 € (0.78 лв), а не математическата половина (0.35 €).
+        if(ing.price === 1.37) return 0.78;
         return ing.price / 2;
       }
       return ing.price;
@@ -1266,7 +1270,12 @@ function initMenu(){
       return ing.nut;
     }
     function currentMinPrice(){
-      if(builder.hasSmallSize && size === "small" && builder.smallMinPrice != null) return builder.smallMinPrice;
+      if(type === "salad" && builder.minPriceHighCount != null && selectedCount() >= builder.minPriceHighCountThreshold){
+        return builder.minPriceHighCount;
+      }
+      if(type === "bowl" && builder.minPriceWithTuna != null && selected[builder.tunaIngredientId] > 0){
+        return builder.minPriceWithTuna;
+      }
       return builder.minPrice || 0;
     }
     function sizeSuffix(){

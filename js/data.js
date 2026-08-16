@@ -181,19 +181,19 @@ const MENU_DATA = [
   ]},
 
   { category:"Салати", icon:"🥗", items:[
-    { id:"sal1", photo:"img/salads/fines.jpg",  name:"Финес",     price:7.43, weight:"480 г", desc:"Зелена салата, краставица, морков, зеле, царевица, копър и кашкавал.", nut:{kcal:442,p:24,c:39,f:23}, smallSize:{ weight:"300 г", price:6.45 } },
-    { id:"sal2", photo:"img/salads/izobilie.jpg",  name:"Изобилие",  price:8.21, weight:"550 г", desc:"Домат, паста, пилешко филе, зелена салата, авокадо, магданоз и чушка.", nut:{kcal:371,p:36,c:58,f:8}, smallSize:{ weight:"350 г", price:6.45 } },
-    { id:"sal3", photo:"img/salads/balgarka.jpg",  name:"Българка",  price:7.43, weight:"520 г", desc:"Зелена салата, домат, краставица, сирене, маслини и магданоз.", nut:{kcal:465,p:18,c:36,f:19}, smallSize:{ weight:"320 г", price:6.45 } },
-    { id:"sal4", photo:"img/salads/vitamina.jpg",  name:"Витамина",  price:7.43, weight:"400 г", desc:"Цвекло, морков, зелена ябълка, чесън и копър.", nut:{kcal:366,p:8,c:60,f:15}, smallSize:{ weight:"250 г", price:6.45 } },
-    { id:"sal5", photo:"img/salads/efekt.jpg",  name:"Ефект",     price:8.21, weight:"450 г", desc:"Домат, зеле, цвекло, маслини, плочка сирене с магданозено песто, копър и тиквено семе.", nut:{kcal:581,p:23,c:34,f:33}, smallSize:{ weight:"300 г", price:6.45 } },
-    { id:"sal6", photo:"img/salads/papagal.jpg",  name:"Папагал",   price:9.39, weight:"480 г", desc:"Домат, краставица, чушка, авокадо, спанак, морков, киноа, нар, магданоз и пресен лук.", nut:{kcal:265,p:10,c:48,f:5}, smallSize:{ weight:"300 г", price:7.43 } },
-    { id:"sal7", photo:"img/salads/cezar.jpg",  name:"Цезар",     price:8.61, weight:"530 г", desc:"Зелена салата, краставица, домат, пилешко филе, крутони, млечен дресинг и пармезан.", nut:{kcal:488,p:25,c:49,f:21}, smallSize:{ weight:"330 г", price:6.45 } },
-    { id:"sal8", photo:"img/salads/bulgur.jpg",  name:"Булгур",    price:7.43, weight:"450 г", desc:"Краставица, булгур, морков, чушка, пресен лук, магданоз, копър и сирене с млечен дресинг.", nut:{kcal:428,p:19,c:36,f:24}, smallSize:{ weight:"300 г", price:6.45 } },
-    { id:"sal9", photo:"img/salads/riba-ton.jpg",  name:"Риба тон",  price:8.21, weight:"480 г", desc:"Морков, зелена салата, авокадо, домат, яйце, риба тон и копър.", nut:{kcal:257,p:22,c:35,f:10}, smallSize:{ weight:"320 г", price:6.45 } },
-    { id:"sal10", photo:"img/salads/amerikano.jpg", name:"Американо", price:8.61, weight:"480 г", desc:"Зелен боб, бекон, зелена салата, пресен лук, пармезан, яйце, дресинг горчица и крутони.", nut:{kcal:576,p:22,c:44,f:32}, nutNote:"калориите са без дресинг", smallSize:{ weight:"320 г", price:6.45 } },
-    { id:"sal11", photo:"img/salads/zasita.jpg", name:"Засита",    price:9.39, weight:"520 г", desc:"Моцарела, домат, спанак, нахут, магданоз, шунка, морков и гъби.", nut:{kcal:477,p:35,c:43,f:22}, smallSize:{ weight:"320 г", price:7.43 } },
-    { id:"sal12", photo:"img/salads/zdrave.jpg", name:"Здраве",    price:8.21, weight:"450 г", desc:"Спанак, цвекло, авокадо, зелена ябълка, домат и сусам.", nut:{kcal:387,p:10,c:47,f:19}, smallSize:{ weight:"300 г", price:6.45 } },
-    { id:"sal13", photo:"img/salads/zelena.jpg", name:"Зелена",    price:8.21, weight:"400 г", desc:"Спанак, зелена ябълка, краставица, чушка, авокадо, копър и магданоз.", nut:{kcal:355,p:10,c:40,f:19}, smallSize:{ weight:"250 г", price:6.45 } },
+    { id:"sal1", photo:"img/salads/fines.jpg",  name:"Финес",     price:8.80, weight:"480 г", desc:"Зелена салата, краставица, морков, зеле, царевица, копър и кашкавал.", nut:{kcal:442,p:24,c:39,f:23}, smallSize:{ weight:"300 г", price:7.43 } },
+    { id:"sal2", photo:"img/salads/izobilie.jpg",  name:"Изобилие",  price:9.39, weight:"550 г", desc:"Домат, паста, пилешко филе, зелена салата, авокадо, магданоз и чушка.", nut:{kcal:371,p:36,c:58,f:8}, smallSize:{ weight:"350 г", price:7.43 } },
+    { id:"sal3", photo:"img/salads/balgarka.jpg",  name:"Българка",  price:8.80, weight:"520 г", desc:"Зелена салата, домат, краставица, сирене, маслини и магданоз.", nut:{kcal:465,p:18,c:36,f:19}, smallSize:{ weight:"320 г", price:7.43 } },
+    { id:"sal4", photo:"img/salads/vitamina.jpg",  name:"Витамина",  price:8.21, weight:"400 г", desc:"Цвекло, морков, зелена ябълка, чесън и копър.", nut:{kcal:366,p:8,c:60,f:15}, smallSize:{ weight:"250 г", price:7.43 } },
+    { id:"sal5", photo:"img/salads/efekt.jpg",  name:"Ефект",     price:9.58, weight:"450 г", desc:"Домат, зеле, цвекло, маслини, плочка сирене с магданозено песто, копър и тиквено семе.", nut:{kcal:581,p:23,c:34,f:33}, smallSize:{ weight:"300 г", price:7.43 } },
+    { id:"sal6", photo:"img/salads/papagal.jpg",  name:"Папагал",   price:10.95, weight:"480 г", desc:"Домат, краставица, чушка, авокадо, спанак, морков, киноа, нар, магданоз и пресен лук.", nut:{kcal:265,p:10,c:48,f:5}, smallSize:{ weight:"300 г", price:8.41 } },
+    { id:"sal7", photo:"img/salads/cezar.jpg",  name:"Цезар",     price:9.58, weight:"530 г", desc:"Зелена салата, краставица, домат, пилешко филе, крутони, млечен дресинг и пармезан.", nut:{kcal:488,p:25,c:49,f:21}, smallSize:{ weight:"330 г", price:7.43 } },
+    { id:"sal8", photo:"img/salads/bulgur.jpg",  name:"Булгур",    price:8.80, weight:"450 г", desc:"Краставица, булгур, морков, чушка, пресен лук, магданоз, копър и сирене с млечен дресинг.", nut:{kcal:428,p:19,c:36,f:24}, smallSize:{ weight:"300 г", price:7.43 } },
+    { id:"sal9", photo:"img/salads/riba-ton.jpg",  name:"Риба тон",  price:9.39, weight:"480 г", desc:"Морков, зелена салата, авокадо, домат, яйце, риба тон и копър.", nut:{kcal:257,p:22,c:35,f:10}, smallSize:{ weight:"320 г", price:7.43 } },
+    { id:"sal10", photo:"img/salads/amerikano.jpg", name:"Американо", price:9.97, weight:"480 г", desc:"Зелен боб, бекон, зелена салата, пресен лук, пармезан, яйце, дресинг горчица и крутони.", nut:{kcal:576,p:22,c:44,f:32}, nutNote:"калориите са без дресинг", smallSize:{ weight:"320 г", price:7.43 } },
+    { id:"sal11", photo:"img/salads/zasita.jpg", name:"Засита",    price:10.76, weight:"520 г", desc:"Моцарела, домат, спанак, нахут, магданоз, шунка, морков и гъби.", nut:{kcal:477,p:35,c:43,f:22}, smallSize:{ weight:"320 г", price:8.41 } },
+    { id:"sal12", photo:"img/salads/zdrave.jpg", name:"Здраве",    price:9.39, weight:"450 г", desc:"Спанак, цвекло, авокадо, зелена ябълка, домат и сусам.", nut:{kcal:387,p:10,c:47,f:19}, smallSize:{ weight:"300 г", price:7.43 } },
+    { id:"sal13", photo:"img/salads/zelena.jpg", name:"Зелена",    price:9.39, weight:"400 г", desc:"Спанак, зелена ябълка, краставица, чушка, авокадо, копър и магданоз.", nut:{kcal:355,p:10,c:40,f:19}, smallSize:{ weight:"250 г", price:7.43 } },
   ]},
 
   { category:"Дресинги", icon:"🥄", items:[
@@ -212,12 +212,12 @@ const MENU_DATA = [
   ]},
 
   { category:"Бургери", icon:"🍔", items:[
-    { id:"bur1", name:"Бургер „Класик“",       price:7.63, photo:"img/burgers/klasik.jpg", desc:"Пълнозърнесто хлебче, пилешко филе, зелена салата, домат, краставица, чедър и млечен сос.", nut:{kcal:430,p:26,c:38,f:18} },
-    { id:"bur2", name:"Веган бургер",          price:7.04, photo:"img/burgers/vegan.jpg", desc:"Пълнозърнесто хлебче, хумус, домат, краставица, печена чушка и маслини.", nut:{kcal:380,p:14,c:46,f:14} },
-    { id:"bur3", name:"Цветен бургер",         price:8.61, photo:"img/burgers/tsveten.jpg", desc:"Пълнозърнесто хлебче, шунка, домат, босилеково песто, царевица, морков и ементал.", nut:{kcal:440,p:20,c:40,f:20} },
-    { id:"bur4", name:"Бургер с риба тон",     price:7.63, photo:"img/burgers/riba-ton.jpg", desc:"Пълнозърнесто хлебче, риба тон, зелена салата, краставица, маслини, ементал и млечен сос.", nut:{kcal:420,p:25,c:36,f:17} },
-    { id:"bur5", name:"Бургер „Детски спомен“",price:7.04, photo:"img/burgers/detski-spomen.jpg", desc:"Пълнозърнесто хлебче, магданозено песто, сирене, печена чушка, домат, краставица и поръска от пресен лук.", nut:{kcal:390,p:14,c:42,f:18} },
-    { id:"bur6", name:"Сладък бургер",         price:7.04, photo:"img/burgers/sladak-burger.jpg", desc:"Пълнозърнесто хлебче със сусамов тахан, ябълка, мед, тиквено семе и канела.", nut:{kcal:410,p:9,c:56,f:16} },
+    { id:"bur1", name:"Бургер „Класик“",       price:9.00, photo:"img/burgers/klasik.jpg", desc:"Пълнозърнесто хлебче, пилешко филе, зелена салата, домат, краставица, чедър и млечен сос.", nut:{kcal:430,p:26,c:38,f:18} },
+    { id:"bur2", name:"Веган бургер",          price:8.41, photo:"img/burgers/vegan.jpg", desc:"Пълнозърнесто хлебче, хумус, домат, краставица, печена чушка и маслини.", nut:{kcal:380,p:14,c:46,f:14} },
+    { id:"bur3", name:"Цветен бургер",         price:9.97, photo:"img/burgers/tsveten.jpg", desc:"Пълнозърнесто хлебче, шунка, домат, босилеково песто, царевица, морков и ементал.", nut:{kcal:440,p:20,c:40,f:20} },
+    { id:"bur4", name:"Бургер с риба тон",     price:9.00, photo:"img/burgers/riba-ton.jpg", desc:"Пълнозърнесто хлебче, риба тон, зелена салата, краставица, маслини, ементал и млечен сос.", nut:{kcal:420,p:25,c:36,f:17} },
+    { id:"bur5", name:"Бургер „Детски спомен“",price:8.21, photo:"img/burgers/detski-spomen.jpg", desc:"Пълнозърнесто хлебче, магданозено песто, сирене, печена чушка, домат, краставица и поръска от пресен лук.", nut:{kcal:390,p:14,c:42,f:18} },
+    { id:"bur6", name:"Сладък бургер",         price:8.21, photo:"img/burgers/sladak-burger.jpg", desc:"Пълнозърнесто хлебче със сусамов тахан, ябълка, мед, тиквено семе и канела.", nut:{kcal:410,p:9,c:56,f:16} },
   ]},
 
   { category:"Десерти", icon:"🍓", items:[
@@ -289,9 +289,9 @@ const MENU_DATA = [
   ]},
 
   { category:"Балансирана купа зеленчуци", icon:"🍲", items:[
-    { id:"bowl1", name:"Купа с пиле",     price:9.00,  weight:"500 г", photo:"img/bowls/kupa-pile.jpg", desc:"Картофи на пара, моркови на пара, пилешко филе, маслини, пресен лук, яйце и лимонов дресинг.", nut:{kcal:386,p:26,c:37,f:7}, nutNote:"калориите са без дресинг" },
-    { id:"bowl2", name:"Купа с риба",     price:10.95, weight:"400 г", photo:"img/bowls/kupa-riba.jpg", desc:"Ориз на пара, пресен спанак, риба тон, маслини, пармезан, авокадо, яйце, копър и лимонов дресинг.", nut:{kcal:609,p:30,c:54,f:21}, nutNote:"калориите са без дресинг" },
-    { id:"bowl3", name:"Купа със сирена", price:9.19,  weight:"500 г", photo:"img/bowls/kupa-sirena.jpg", desc:"Броколи на пара, картоф на пара, нахут, кашкавал, моцарела, пресен лук, авокадо и лимонов дресинг.", nut:{kcal:761,p:45,c:53,f:44}, nutNote:"калориите са без дресинг" },
+    { id:"bowl1", name:"Купа с пиле",     price:9.39,  weight:"500 г", photo:"img/bowls/kupa-pile.jpg", desc:"Картофи на пара, моркови на пара, пилешко филе, маслини, пресен лук, яйце и лимонов дресинг.", nut:{kcal:386,p:26,c:37,f:7}, nutNote:"калориите са без дресинг" },
+    { id:"bowl2", name:"Купа с риба",     price:12.32, weight:"400 г", photo:"img/bowls/kupa-riba.jpg", desc:"Ориз на пара, пресен спанак, риба тон, маслини, пармезан, авокадо, яйце, копър и лимонов дресинг.", nut:{kcal:609,p:30,c:54,f:21}, nutNote:"калориите са без дресинг" },
+    { id:"bowl3", name:"Купа със сирена", price:9.97,  weight:"500 г", photo:"img/bowls/kupa-sirena.jpg", desc:"Броколи на пара, картоф на пара, нахут, кашкавал, моцарела, пресен лук, авокадо и лимонов дресинг.", nut:{kcal:761,p:45,c:53,f:44}, nutNote:"калориите са без дресинг" },
   ]},
 ];
 
@@ -301,43 +301,43 @@ const MENU_DATA = [
    ========================================================= */
 const DIY_INGREDIENTS = [
   { id:"i-chicken",   name:"Пилешко филе",        price:1.96, nut:{kcal:78,p:16,c:1,f:1} },
-  { id:"i-parmesan",  name:"Пармезан",             price:1.17, nut:{kcal:104,p:1,c:12,f:6} },
+  { id:"i-parmesan",  name:"Пармезан",             price:1.37, nut:{kcal:104,p:1,c:12,f:6} },
   { id:"i-mozzarella",name:"Моцарела",             price:1.96, nut:{kcal:240,p:18,c:2,f:18} },
-  { id:"i-bacon",     name:"Бекон",                price:1.56, nut:{kcal:222,p:9,c:1,f:20} },
-  { id:"i-spinach",   name:"Спанак",               price:1.56, nut:{kcal:18,p:2,c:3,f:0} },
-  { id:"i-cheese",    name:"Сирене",               price:1.56, nut:{kcal:207,p:12,c:1,f:17} },
+  { id:"i-bacon",     name:"Бекон",                price:1.96, nut:{kcal:222,p:9,c:1,f:20} },
+  { id:"i-spinach",   name:"Спанак",               price:1.96, nut:{kcal:18,p:2,c:3,f:0} },
+  { id:"i-cheese",    name:"Сирене",               price:1.96, nut:{kcal:207,p:12,c:1,f:17} },
   { id:"i-tuna",      name:"Риба тон",             price:1.96, nut:{kcal:52,p:12,c:0,f:1} },
-  { id:"i-ham",       name:"Шунка",                price:1.17, nut:{kcal:61,p:8,c:2,f:2} },
-  { id:"i-cheddar",   name:"Чедър на слайс",       price:1.56, nut:{kcal:100,p:6,c:1,f:8} },
-  { id:"i-kashkaval", name:"Кашкавал",             price:1.56, nut:{kcal:274,p:18,c:0,f:23} },
-  { id:"i-avocado",   name:"Авокадо",              price:1.56, nut:{kcal:40,p:1,c:2,f:4} },
-  { id:"i-roastpep",  name:"Печена червена чушка", price:1.17, nut:{kcal:26,p:1,c:5,f:1} },
-  { id:"i-lettuce",   name:"Зелена салата",        price:1.17, nut:{kcal:18,p:1,c:4,f:0} },
-  { id:"i-cucumber",  name:"Краставица",           price:1.17, nut:{kcal:17,p:1,c:4,f:0} },
-  { id:"i-tomato",    name:"Домат",                price:1.17, nut:{kcal:16,p:1,c:4,f:0} },
-  { id:"i-redbean",   name:"Червен боб",           price:1.17, nut:{kcal:99,p:7,c:13,f:1} },
-  { id:"i-cabbage",   name:"Зеле",                 price:1.17, nut:{kcal:38,p:2,c:9,f:0} },
-  { id:"i-carrot",    name:"Морков",               price:1.17, nut:{kcal:53,p:1,c:12,f:0} },
-  { id:"i-greenapple",name:"Зелена ябълка",        price:1.56, nut:{kcal:89,p:0,c:23,f:0} },
-  { id:"i-pepper",    name:"Чушка",                price:1.17, nut:{kcal:19,p:1,c:4,f:0} },
-  { id:"i-beet",      name:"Цвекло",               price:1.17, nut:{kcal:52,p:2,c:11,f:0} },
-  { id:"i-chickpea",  name:"Нахут",                price:1.17, nut:{kcal:76,p:4,c:19,f:2} },
-  { id:"i-bulgur",    name:"Булгур",               price:1.56, nut:{kcal:52,p:2,c:12,f:0} },
-  { id:"i-greenbean", name:"Зелен боб",            price:1.17, nut:{kcal:36,p:2,c:4,f:0} },
-  { id:"i-quinoa",    name:"Киноа",                price:1.17, nut:{kcal:80,p:3,c:14,f:1} },
-  { id:"i-seeds",     name:"Семена и ядки",        price:1.17, nut:{kcal:170,p:7,c:4,f:15} },
-  { id:"i-corn",      name:"Царевица",             price:1.17, nut:{kcal:42,p:1,c:10,f:0} },
-  { id:"i-olives",    name:"Маслини",              price:1.17, nut:{kcal:94,p:1,c:2,f:1} },
-  { id:"i-macaroni",  name:"Паста",                price:1.17, nut:{kcal:200,p:6,c:46,f:1} },
-  { id:"i-egg",       name:"Яйце",                 price:1.17, nut:{kcal:78,p:6,c:1,f:5} },
-  { id:"i-croutons",  name:"Крутони",              price:1.17, nut:{kcal:113,p:3,c:21,f:1} },
-  { id:"i-mushroom",  name:"Гъби",                 price:1.17, nut:{kcal:13,p:1,c:1,f:0} },
-  { id:"i-scallion",  name:"Зелен лук",            price:1.17, nut:{kcal:10,p:1,c:2,f:0} },
-  { id:"i-pomegranate",name:"Нар",                 price:1.56, nut:{kcal:17,p:0,c:4,f:0} },
-  { id:"i-emmental",  name:"Ементал",              price:1.56, nut:{kcal:105,p:7,c:1,f:8} },
+  { id:"i-ham",       name:"Шунка",                price:1.37, nut:{kcal:61,p:8,c:2,f:2} },
+  { id:"i-cheddar",   name:"Чедър на слайс",       price:1.96, nut:{kcal:100,p:6,c:1,f:8} },
+  { id:"i-kashkaval", name:"Кашкавал",             price:1.96, nut:{kcal:274,p:18,c:0,f:23} },
+  { id:"i-avocado",   name:"Авокадо",              price:1.96, nut:{kcal:40,p:1,c:2,f:4} },
+  { id:"i-roastpep",  name:"Печена червена чушка", price:1.37, nut:{kcal:26,p:1,c:5,f:1} },
+  { id:"i-lettuce",   name:"Зелена салата",        price:1.37, nut:{kcal:18,p:1,c:4,f:0} },
+  { id:"i-cucumber",  name:"Краставица",           price:1.37, nut:{kcal:17,p:1,c:4,f:0} },
+  { id:"i-tomato",    name:"Домат",                price:1.37, nut:{kcal:16,p:1,c:4,f:0} },
+  { id:"i-redbean",   name:"Червен боб",           price:1.37, nut:{kcal:99,p:7,c:13,f:1} },
+  { id:"i-cabbage",   name:"Зеле",                 price:1.37, nut:{kcal:38,p:2,c:9,f:0} },
+  { id:"i-carrot",    name:"Морков",               price:1.37, nut:{kcal:53,p:1,c:12,f:0} },
+  { id:"i-greenapple",name:"Зелена ябълка",        price:1.37, nut:{kcal:89,p:0,c:23,f:0} },
+  { id:"i-pepper",    name:"Чушка",                price:1.37, nut:{kcal:19,p:1,c:4,f:0} },
+  { id:"i-beet",      name:"Цвекло",               price:1.37, nut:{kcal:52,p:2,c:11,f:0} },
+  { id:"i-chickpea",  name:"Нахут",                price:1.37, nut:{kcal:76,p:4,c:19,f:2} },
+  { id:"i-bulgur",    name:"Булгур",               price:1.96, nut:{kcal:52,p:2,c:12,f:0} },
+  { id:"i-greenbean", name:"Зелен боб",            price:1.37, nut:{kcal:36,p:2,c:4,f:0} },
+  { id:"i-quinoa",    name:"Киноа",                price:1.37, nut:{kcal:80,p:3,c:14,f:1} },
+  { id:"i-seeds",     name:"Семена и ядки",        price:1.37, nut:{kcal:170,p:7,c:4,f:15} },
+  { id:"i-corn",      name:"Царевица",             price:1.37, nut:{kcal:42,p:1,c:10,f:0} },
+  { id:"i-olives",    name:"Маслини",              price:1.37, nut:{kcal:94,p:1,c:2,f:1} },
+  { id:"i-macaroni",  name:"Паста",                price:1.37, nut:{kcal:200,p:6,c:46,f:1} },
+  { id:"i-egg",       name:"Яйце",                 price:1.37, nut:{kcal:78,p:6,c:1,f:5} },
+  { id:"i-croutons",  name:"Крутони",              price:1.37, nut:{kcal:113,p:3,c:21,f:1} },
+  { id:"i-mushroom",  name:"Гъби",                 price:1.37, nut:{kcal:13,p:1,c:1,f:0} },
+  { id:"i-scallion",  name:"Зелен лук",            price:1.37, nut:{kcal:10,p:1,c:2,f:0} },
+  { id:"i-pomegranate",name:"Нар",                 price:1.37, nut:{kcal:17,p:0,c:4,f:0} },
+  { id:"i-emmental",  name:"Ементал",              price:1.96, nut:{kcal:105,p:7,c:1,f:8} },
 ];
 
-const DIY_BREAD_WHEAT = { id:"i-bread-wheat", name:"Пълнозърнесто хлебче / Питка", price:1.56, nut:{kcal:384,p:13,c:65,f:3} };
+const DIY_BREAD_WHEAT = { id:"i-bread-wheat", name:"Пълнозърнесто хлебче / Питка", price:1.96, nut:{kcal:384,p:13,c:65,f:3} };
 
 /* За "Направи си сам" САЛАТА ементалът не е налична съставка (само за
    купа/бургер) — затова отделен списък само за салатата. */
@@ -364,8 +364,13 @@ const BUILDERS = {
   salad: {
     label:"Салата — направи си сам",
     icon:"🥗",
-    intro:"Избери размер, съставки и дресинг по избор (или без дресинг). Цената тръгва от 0 € и расте с всяка добавена съставка — точно както на място в обекта. Минималната стойност е 3.30 € както за голяма, така и за малка салата.",
-    minPrice:3.30,
+    intro:"Избери размер, съставки и дресинг по избор (или без дресинг). Цената тръгва от 0 € и расте с всяка добавена съставка — точно както на място в обекта. Минималната стойност зависи от избраните съставки.",
+    minPrice:3.80,
+    /* Над този брой избрани съставки (общо количество, не различни
+       видове) минималната стойност се вдига на minPriceHighCount —
+       важи еднакво за голяма и малка салата. */
+    minPriceHighCountThreshold:7,
+    minPriceHighCount:4.30,
     hasDressing:true,
     ingredients: DIY_INGREDIENTS_SALAD,
     dressings: DIY_DRESSING_OPTIONS,
@@ -375,14 +380,17 @@ const BUILDERS = {
        се разполовяват физически, затова остават на пълна цена/стойност
        дори при избрана малка салата. */
     hasSmallSize:true,
-    smallMinPrice:3.30,
     noHalfIds:["i-egg","i-avocado"],
   },
   bowl: {
     label:"Купа — направи си сам",
     icon:"🍲",
-    intro:"Избери топла основа (ориз, картоф, броколи, морков) и добавки по избор, плюс дресинг по избор (или без дресинг). Минималната стойност за купа е 3.80 €.",
-    minPrice:3.80,
+    intro:"Избери топла основа (ориз, картоф, броколи, морков) и добавки по избор, плюс дресинг по избор (или без дресинг). Минималната стойност зависи от избраните добавки.",
+    minPrice:4.00,
+    /* Ако купата съдържа тази съставка, минималната стойност става
+       по-висока (minPriceWithTuna) вместо обичайната minPrice. */
+    tunaIngredientId:"i-tuna",
+    minPriceWithTuna:4.60,
     hasDressing:true,
     ingredients: [...DIY_BOWL_BASE, ...DIY_INGREDIENTS],
     dressings: DIY_DRESSING_OPTIONS,
@@ -391,8 +399,8 @@ const BUILDERS = {
   burger: {
     label:"Бургер — направи си сам",
     icon:"🍔",
-    intro:"Хлебчето е избрано автоматично — добави и други съставки по избор. Минималната стойност за бургер е 3.60 €.",
-    minPrice:3.60,
+    intro:"Хлебчето е избрано автоматично — добави и други съставки по избор. Минималната стойност за бургер е 4.20 €.",
+    minPrice:4.20,
     hasDressing:false,
     ingredients: [DIY_BREAD_WHEAT, ...DIY_INGREDIENTS],
     defaultSelected: [DIY_BREAD_WHEAT.id],
