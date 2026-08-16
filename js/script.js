@@ -429,32 +429,48 @@ function updatePrinterStatusUI(){
   if(testBtn) testBtn.style.display = "inline-flex";
 }
 
+/* Разпознава дали част от бележка/състав означава ПРЕМАХВАНЕ (напр. "без
+   лук", "премахни доматите") или ДОБАВЯНЕ (по подразбиране всичко друго —
+   съставки от конструктора, извънредни добавки, засилен вкус и т.н.).
+   Не променя по никакъв начин как клиентът поръчва — само форматира вече
+   въведения свободен текст при печат на бележката за кухнята. */
+const RECEIPT_REMOVAL_WORDS = /^(без|премахни|премахнете|махни|махнете|изключи|изключете|не искам|не желая|не слагай|не добавяй)(\s|$)/i;
+function classifyReceiptSegments(text){
+  if(!text) return [];
+  return text.split(",").map(s=>s.trim()).filter(Boolean).map(seg=>({
+    text: seg,
+    sign: RECEIPT_REMOVAL_WORDS.test(seg) ? "-" : "+",
+  }));
+}
+
 function buildReceiptHtml(order){
   const itemsHtml = (order.items || []).map(it=>{
-    let row = `<div class="receipt-row">${escapeHtml(String(it.qty))} x ${escapeHtml(it.name || "")}</div>`;
-    if(it.details) row += `<div class="receipt-row">&nbsp;&nbsp;(${escapeHtml(it.details)})</div>`;
-    if(it.note) row += `<div class="receipt-row">&nbsp;&nbsp;Бележка: ${escapeHtml(it.note)}</div>`;
-    return row;
+    const subLines = [];
+    classifyReceiptSegments(it.details).forEach(seg=>{
+      subLines.push(`<div class="receipt-sub-row">${seg.sign} ${escapeHtml(seg.text)}</div>`);
+    });
+    classifyReceiptSegments(it.note).forEach(seg=>{
+      subLines.push(`<div class="receipt-sub-row">${seg.sign} ${escapeHtml(seg.text)}</div>`);
+    });
+    return `
+      <div class="receipt-item-row">${escapeHtml(it.name || "")} - ${escapeHtml(String(it.qty))}</div>
+      ${subLines.join("")}
+      <div class="receipt-line"></div>
+    `;
   }).join("");
 
   return `
     <h1>ВИТАМИНА</h1>
-    <p class="receipt-sub">Салатен бар · Враца</p>
     <div class="receipt-line"></div>
-    <div class="receipt-row"><span class="receipt-label">Поръчка №:</span> ${escapeHtml(String(order.number))}</div>
-    <div class="receipt-row"><span class="receipt-label">Дата:</span> ${escapeHtml(formatDate(order.date))}</div>
+    <div class="receipt-header-row">
+      <span class="receipt-name">${escapeHtml(order.name || "—")}</span>
+      <span class="receipt-time">${escapeHtml(order.time ? order.time : "възможно най-скоро")}</span>
+    </div>
+    <div class="receipt-meta">№${escapeHtml(String(order.number))} · ${escapeHtml(order.phone || "—")} · ${escapeHtml(formatDate(order.date))}</div>
     <div class="receipt-line"></div>
-    <div class="receipt-row"><span class="receipt-label">Име:</span> ${escapeHtml(order.name || "—")}</div>
-    <div class="receipt-row"><span class="receipt-label">Телефон:</span> ${escapeHtml(order.phone || "—")}</div>
-    <div class="receipt-row"><span class="receipt-label">Час за готовност:</span> ${escapeHtml(order.time ? order.time : "възможно най-скоро")}</div>
-    <div class="receipt-line"></div>
-    <div class="receipt-row receipt-label">Състав на поръчката:</div>
     ${itemsHtml}
-    ${order.note ? `<div class="receipt-line"></div><div class="receipt-row"><span class="receipt-label">Бележка към поръчката:</span> ${escapeHtml(order.note)}</div>` : ""}
-    <div class="receipt-line"></div>
+    ${order.note ? `<div class="receipt-sub-row">Общо: ${escapeHtml(order.note)}</div><div class="receipt-line"></div>` : ""}
     <div class="receipt-row receipt-total">Обща сума: ${fmt(order.total)} EUR</div>
-    <div class="receipt-line"></div>
-    <p class="receipt-sub">Благодарим ви!</p>
   `;
 }
 
