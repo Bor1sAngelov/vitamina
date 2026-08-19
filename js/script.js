@@ -1317,11 +1317,45 @@ function initMenu(){
       return Math.round(total * 100) / 100;
     }
     /* Цената тръгва от 0 € и расте само с добавените съставки — НЕ се
-       „вдига“ изкуствено до минимума. Минималната стойност само блокира
-       добавянето в количката, докато изборът не я достигне (виж isBelowMin).
+       „вдига“ изкуствено до минимума, докато клиентът избира. Ако при
+       добавяне в количката общата сума е под минималната стойност,
+       поръчката пак се приема, но крайната цена в количката се
+       закръгля нагоре до минимума (виж addBtn.addEventListener по-долу).
        selectedTotal() вече връща директно евро, затова тук няма нужда
        от toEUR(). */
     function isBelowMin(){ return selectedTotal() < currentMinPrice() - 0.005; }
+    /* Дали в момента важи ПО-ВИСОКАТА степен на минимална стойност
+       (по-богат избор от съставки при салатата, или риба тон в купата).
+       Използва се само за да обясним на клиента защо минимумът се е
+       променил — без да разкриваме точното правило/бройката. */
+    function isHighMinTierActive(){
+      if(type === "salad" && builder.minPriceHighCount != null){
+        return selectedCount() >= builder.minPriceHighCountThreshold;
+      }
+      if(type === "bowl" && builder.minPriceWithTuna != null){
+        return selected[builder.tunaIngredientId] > 0;
+      }
+      return false;
+    }
+    /* Съобщение за минималната стойност — винаги информативно, никога
+       блокиращо: обяснява закръгляне нагоре и (при по-високата степен)
+       кратка причина, без да издава точното правило зад нея. */
+    function buildMinNoteText(){
+      const minP = currentMinPrice();
+      const label = builder.label.split(" —")[0].toLowerCase();
+      const highTier = isHighMinTierActive();
+      const belowMin = isBelowMin();
+      if(highTier && belowMin){
+        return `По-богатият избор повишава минималната стойност за ${label}${sizeSuffix()} на ${minP.toFixed(2)} € — сумата в количката ще бъде закръглена до нея.`;
+      }
+      if(highTier){
+        return `По-богатият избор повишава минималната стойност за ${label}${sizeSuffix()} на ${minP.toFixed(2)} €.`;
+      }
+      if(belowMin){
+        return `Минималната стойност за ${label}${sizeSuffix()} е ${minP.toFixed(2)} € — сумата в количката ще бъде закръглена до нея.`;
+      }
+      return "";
+    }
     function selectedNutrition(){
       let kcal=0, p=0, c=0, f=0;
       Object.entries(selected).forEach(([id,qty])=>{
@@ -1469,10 +1503,8 @@ function initMenu(){
           showToast(`Избери поне 1 съставка.`);
           return;
         }
-        if(isBelowMin()){
-          showToast(`Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()}${sizeSuffix()} е ${currentMinPrice().toFixed(2)} € — добави още съставки (сега имаш ${selectedTotal().toFixed(2)} €).`);
-          return;
-        }
+        const belowMin = isBelowMin();
+        const finalPrice = Math.max(selectedTotal(), currentMinPrice());
         const names = Object.keys(selected).map(id => {
           const ing = builder.ingredients.find(i=>i.id===id);
           const qty = selected[id];
@@ -1485,8 +1517,12 @@ function initMenu(){
         }
         const note = await askForItemNote();
         const cartName = builder.label + sizeSuffix();
-        addToCart({ name: cartName, price: selectedTotal() * EUR_RATE, details, nut: selectedNutrition(), note });
-        showToast(`${cartName} е добавена в количката 🛒`);
+        addToCart({ name: cartName, price: finalPrice * EUR_RATE, details, nut: selectedNutrition(), note });
+        if(belowMin){
+          showToast(`${cartName} е добавена в количката 🛒 — закръглена до минималната стойност от ${finalPrice.toFixed(2)} €.`);
+        } else {
+          showToast(`${cartName} е добавена в количката 🛒`);
+        }
         Object.keys(selected).forEach(k=>delete selected[k]);
         renderGroups();
       });
@@ -1520,11 +1556,10 @@ function initMenu(){
         }
         bowlTotal.textContent = selectedTotal().toFixed(2) + " €";
         const minNoteEl = mount.querySelector("#bowlMinNote");
-        if(isBelowMin()){
+        const minNoteText = buildMinNoteText();
+        if(minNoteText){
           minNoteEl.style.display = "block";
-          const minP = currentMinPrice();
-          const missing = minP - selectedTotal();
-          minNoteEl.textContent = `Минималната стойност за ${builder.label.split(" —")[0].toLowerCase()}${sizeSuffix()} е ${minP.toFixed(2)} € — добави още ${missing.toFixed(2)} €, за да продължиш.`;
+          minNoteEl.textContent = minNoteText;
         } else {
           minNoteEl.style.display = "none";
         }
@@ -1533,7 +1568,7 @@ function initMenu(){
         mount.querySelector("#bowlP").textContent = Math.round(nutrition.p);
         mount.querySelector("#bowlC").textContent = Math.round(nutrition.c);
         mount.querySelector("#bowlF").textContent = Math.round(nutrition.f);
-        addBtn.disabled = count < 1 || isBelowMin();
+        addBtn.disabled = count < 1;
       }
       renderSummary();
     }
