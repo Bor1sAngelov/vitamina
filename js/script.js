@@ -449,12 +449,11 @@ function buildReceiptHtml(order){
     classifyReceiptSegments(it.details).forEach(seg=>{
       subLines.push(`<div class="receipt-sub-row">${seg.sign} ${escapeHtml(seg.text)}</div>`);
     });
-    classifyReceiptSegments(it.note).forEach(seg=>{
-      subLines.push(`<div class="receipt-sub-row">${seg.sign} ${escapeHtml(seg.text)}</div>`);
-    });
+    const noteBox = it.note ? `<div class="receipt-note-box">Бележки: ${escapeHtml(it.note)}</div>` : "";
     return `
       <div class="receipt-item-row">${escapeHtml(it.name || "")} - ${escapeHtml(String(it.qty))}</div>
       ${subLines.join("")}
+      ${noteBox}
       <div class="receipt-line"></div>
     `;
   }).join("");
@@ -1263,7 +1262,7 @@ function initMenu(){
     if(Array.isArray(builder.defaultSelected)){
       builder.defaultSelected.forEach(id=>{ selected[id] = (selected[id]||0) + 1; });
     }
-    let selectedDressing = builder.hasDressing ? builder.dressings[builder.dressings.length ? 0 : 0].id : null;
+    let selectedDressings = {}; // id -> qty (само ако builder.hasDressing)
     let size = "large"; // само за салатата (builder.hasSmallSize) — "large" | "small"
 
     /* Коригира цената на съставка според избрания размер. Само салатата
@@ -1310,9 +1309,11 @@ function initMenu(){
         const ing = builder.ingredients.find(i=>i.id===id);
         if(ing) total += unitEUR(ingPrice(ing)) * qty;
       });
-      if(builder.hasDressing && selectedDressing){
-        const d = builder.dressings.find(x=>x.id===selectedDressing);
-        if(d) total += unitEUR(d.price);
+      if(builder.hasDressing){
+        Object.entries(selectedDressings).forEach(([id,qty])=>{
+          const d = builder.dressings.find(x=>x.id===id);
+          if(d) total += unitEUR(d.price) * qty;
+        });
       }
       return Math.round(total * 100) / 100;
     }
@@ -1363,9 +1364,11 @@ function initMenu(){
         const n = ing ? ingNut(ing) : null;
         if(n){ kcal += n.kcal*qty; p += n.p*qty; c += n.c*qty; f += n.f*qty; }
       });
-      if(builder.hasDressing && selectedDressing){
-        const d = builder.dressings.find(x=>x.id===selectedDressing);
-        if(d && d.nut){ kcal += d.nut.kcal; p += d.nut.p; c += d.nut.c; f += d.nut.f; }
+      if(builder.hasDressing){
+        Object.entries(selectedDressings).forEach(([id,qty])=>{
+          const d = builder.dressings.find(x=>x.id===id);
+          if(d && d.nut){ kcal += d.nut.kcal*qty; p += d.nut.p*qty; c += d.nut.c*qty; f += d.nut.f*qty; }
+        });
       }
       return { kcal, p, c, f };
     }
@@ -1398,10 +1401,16 @@ function initMenu(){
             </div>
             ${builder.hasDressing ? `
             <div class="builder-step">
-              <h4><span class="num">${builder.hasSmallSize ? 3 : 2}</span>Избери ${builder.dressingLabel || "дресинг"}</h4>
-              <select id="dressingSelect" class="dressing-select">
-                ${builder.dressings.map(d=>`<option value="${d.id}">${d.name}${d.price>0 ? ` (+${fmt(d.price)} €)` : ""}</option>`).join("")}
-              </select>
+              <h4><span class="num">${builder.hasSmallSize ? 3 : 2}</span>Избери ${builder.dressingLabel || "дресинг"} (по избор, колкото искаш)</h4>
+              <div class="ingredient-grid" id="dressingGrid">
+                ${builder.dressings.filter(d=>d.id!=="no-dressing").map(d=>`
+                  <div class="ingredient ${selectedDressings[d.id] ? 'active':''}" data-id="${d.id}">
+                    <div class="name">${escapeHtml(d.name)}</div>
+                    <div class="meta">${d.price>0 ? fmt(d.price)+" €" : "включено"}</div>
+                    <span class="ing-qty" style="${selectedDressings[d.id]>1 ? '' : 'display:none;'}">${selectedDressings[d.id]>1 ? `×${selectedDressings[d.id]}` : ""}</span>
+                  </div>
+                `).join("")}
+              </div>
             </div>` : ""}
           </div>
           <div class="bowl-summary">
@@ -1428,17 +1437,12 @@ function initMenu(){
       `;
 
       const ingGrid = mount.querySelector("#ingGrid");
-      const dressingSelect = mount.querySelector("#dressingSelect");
+      const dressingGrid = mount.querySelector("#dressingGrid");
       const bowlCount = mount.querySelector("#bowlCount");
       const bowlLines = mount.querySelector("#bowlLines");
       const bowlTotal = mount.querySelector("#bowlTotal");
       const addBtn = mount.querySelector("#bowlAddBtn");
       const resetBtn = mount.querySelector("#bowlResetBtn");
-
-      if(dressingSelect){
-        dressingSelect.value = selectedDressing;
-        dressingSelect.addEventListener("change", ()=>{ selectedDressing = dressingSelect.value; renderSummary(); });
-      }
 
       if(builder.hasSmallSize){
         mount.querySelectorAll("[data-diy-size]").forEach(btn=>{
@@ -1483,17 +1487,53 @@ function initMenu(){
         renderSummary();
       });
 
+      /* Дресингът вече работи по абсолютно същия начин като съставките —
+         клик добавя по едно, колкото пъти клиентът иска (без ограничение
+         на брой различни дресинги, само таван на бройка от всеки един). */
+      function syncDressingCard(id){
+        const card = dressingGrid ? dressingGrid.querySelector(`.ingredient[data-id="${id}"]`) : null;
+        if(!card) return;
+        const qty = selectedDressings[id] || 0;
+        card.classList.toggle("active", qty > 0);
+        card.classList.toggle("maxed", qty >= MAX_INGREDIENT_QTY);
+        const qtyEl = card.querySelector(".ing-qty");
+        if(qtyEl){
+          if(qty > 1){ qtyEl.textContent = `×${qty}`; qtyEl.style.display = "inline-block"; }
+          else { qtyEl.style.display = "none"; }
+        }
+      }
+      if(dressingGrid){
+        dressingGrid.addEventListener("click", (e)=>{
+          const card = e.target.closest(".ingredient");
+          if(!card) return;
+          const id = card.dataset.id;
+          const current = selectedDressings[id] || 0;
+          if(current >= MAX_INGREDIENT_QTY){
+            const d = builder.dressings.find(x=>x.id===id);
+            showToast(`Максимум ${MAX_INGREDIENT_QTY} бр. от „${d ? d.name : "този дресинг"}“.`);
+            return;
+          }
+          selectedDressings[id] = current + 1;
+          syncDressingCard(id);
+          renderSummary();
+        });
+      }
+
       /* Минусче до всеки ред в „Твоята поръчка“ — маха по 1 бройка,
          за да коригираш грешно кликване. */
       bowlLines.addEventListener("click", (e)=>{
         const btn = e.target.closest("[data-minus]");
         if(!btn) return;
         const id = btn.dataset.minus;
-        if(selected[id]){
+        if(selected[id] != null){
           selected[id] -= 1;
           if(selected[id] <= 0) delete selected[id];
+          syncIngredientCard(id);
+        } else if(selectedDressings[id] != null){
+          selectedDressings[id] -= 1;
+          if(selectedDressings[id] <= 0) delete selectedDressings[id];
+          syncDressingCard(id);
         }
-        syncIngredientCard(id);
         renderSummary();
       });
 
@@ -1511,9 +1551,13 @@ function initMenu(){
           return qty > 1 ? `${ing.name} ×${qty}` : ing.name;
         });
         let details = names.join(", ");
-        if(builder.hasDressing && selectedDressing){
-          const d = builder.dressings.find(x=>x.id===selectedDressing);
-          if(d && d.id !== "no-dressing") details += ` · ${builder.dressingLabel || "дресинг"}: ${d.name}`;
+        if(builder.hasDressing){
+          const dressingNames = Object.keys(selectedDressings).map(id=>{
+            const d = builder.dressings.find(x=>x.id===id);
+            const qty = selectedDressings[id];
+            return qty > 1 ? `${d.name} ×${qty}` : d.name;
+          });
+          if(dressingNames.length) details += ` · ${builder.dressingLabel || "дресинг"}: ${dressingNames.join(", ")}`;
         }
         const note = await askForItemNote();
         const cartName = builder.label + sizeSuffix();
@@ -1524,11 +1568,13 @@ function initMenu(){
           showToast(`${cartName} е добавена в количката 🛒`);
         }
         Object.keys(selected).forEach(k=>delete selected[k]);
+        selectedDressings = {};
         renderGroups();
       });
 
       resetBtn.addEventListener("click", ()=>{
         Object.keys(selected).forEach(k=>delete selected[k]);
+        selectedDressings = {};
         if(builder.hasSmallSize) size = "large";
         renderGroups();
       });
@@ -1537,10 +1583,11 @@ function initMenu(){
         const count = selectedCount();
         bowlCount.textContent = `Избрани: ${count} съставки`;
         const ids = Object.keys(selected);
-        if(ids.length === 0){
+        const dressingIds = builder.hasDressing ? Object.keys(selectedDressings) : [];
+        if(ids.length === 0 && dressingIds.length === 0){
           bowlLines.innerHTML = `<div class="bowl-empty">Все още нищо не е избрано.</div>`;
         } else {
-          bowlLines.innerHTML = ids.map(id=>{
+          const ingLines = ids.map(id=>{
             const ing = builder.ingredients.find(i=>i.id===id);
             const qty = selected[id];
             const unitPrice = unitEUR(ingPrice(ing));
@@ -1553,6 +1600,20 @@ function initMenu(){
               </span>
             </div>`;
           }).join("");
+          const dressingLines = dressingIds.map(id=>{
+            const d = builder.dressings.find(x=>x.id===id);
+            const qty = selectedDressings[id];
+            const unitPrice = unitEUR(d.price);
+            const lineTotal = Math.round(unitPrice * qty * 100) / 100;
+            return `<div class="bowl-line">
+              <span>${escapeHtml(d.name)}${qty>1 ? ` × ${qty}` : ""}</span>
+              <span class="bowl-line-right">
+                <span>${lineTotal>0 ? lineTotal.toFixed(2)+" €" : "вкл."}</span>
+                <button type="button" class="bowl-line-minus" data-minus="${id}" title="Премахни едно" aria-label="Премахни едно">−</button>
+              </span>
+            </div>`;
+          }).join("");
+          bowlLines.innerHTML = ingLines + dressingLines;
         }
         bowlTotal.textContent = selectedTotal().toFixed(2) + " €";
         const minNoteEl = mount.querySelector("#bowlMinNote");

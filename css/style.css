@@ -868,6 +868,23 @@ table.data-table tr:last-child td{ border-bottom:none; }
   #printReceipt .receipt-row{ margin:3px 0; }
   #printReceipt .receipt-label{ font-weight:700; }
   #printReceipt .receipt-total{ font-weight:700; font-size:15px; margin-top:8px; }
+  #printReceipt .receipt-header-row{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:4px 0 2px; }
+  #printReceipt .receipt-name{ font-weight:700; font-size:16px; }
+  #printReceipt .receipt-time{ font-weight:700; font-size:16px; }
+  #printReceipt .receipt-meta{ font-size:11px; margin:0 0 4px; }
+  #printReceipt .receipt-item-row{ font-weight:700; font-size:14px; margin:6px 0 2px; }
+  #printReceipt .receipt-sub-row{ margin:2px 0 2px 6px; font-size:13px; }
+  #printReceipt .receipt-note-box{
+    background:#d9d9d9;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    border:1px solid #000;
+    border-radius:3px;
+    padding:3px 6px;
+    margin:4px 0 2px 6px;
+    font-size:12px;
+    font-weight:700;
+  }
   @page{ margin:0; size:80mm auto; }
 }
 

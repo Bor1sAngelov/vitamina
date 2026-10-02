@@ -311,7 +311,7 @@ const DIY_INGREDIENTS = [
   { id:"i-cheddar",   name:"Чедър на слайс",       price:1.96, nut:{kcal:100,p:6,c:1,f:8} },
   { id:"i-kashkaval", name:"Кашкавал",             price:1.96, nut:{kcal:274,p:18,c:0,f:23} },
   { id:"i-avocado",   name:"Авокадо",              price:1.96, nut:{kcal:40,p:1,c:2,f:4} },
-  { id:"i-roastpep",  name:"Печена червена чушка", price:1.37, nut:{kcal:26,p:1,c:5,f:1} },
+  { id:"i-roastpep",  name:"Печена червена чушка", price:1.96, nut:{kcal:26,p:1,c:5,f:1} },
   { id:"i-lettuce",   name:"Зелена салата",        price:1.37, nut:{kcal:18,p:1,c:4,f:0} },
   { id:"i-cucumber",  name:"Краставица",           price:1.37, nut:{kcal:17,p:1,c:4,f:0} },
   { id:"i-tomato",    name:"Домат",                price:1.37, nut:{kcal:16,p:1,c:4,f:0} },
