@@ -65,6 +65,7 @@ function addToCart(item){
     note: item.note || "",
     minNote: item.minNote || "",
     qty: 1,
+    recipe: item.recipe || null,
   });
   saveCart(cart);
 }
@@ -866,10 +867,6 @@ function initHome(){
             <h3>${escapeHtml(s.name)}</h3>
           </div>
         `).join("")}
-        <div class="soup-of-day-item">
-          <h3>Таратор</h3>
-          <p class="soup-tarator-note">${fmt(TARATOR_PRICE)} € — по желание с ядки (+${fmt(TARATOR_NUTS_ADDON_PRICE)} €)</p>
-        </div>
       </div>
       <a href="menu.html" class="btn btn-primary">Поръчай сега</a>
     `;
@@ -1075,9 +1072,9 @@ function renderDetailPanel(item){
 }
 
 /* Генерира продуктите за категория "Супи": днешните супи (от
-   getTodaysSoups(), редактируеми в админ панела) плюс таратора, който
-   е наличен всеки ден. Резултатът се показва в менюто досущ като
-   обикновени продукти, но не идва от MENU_DATA. */
+   getTodaysSoups(), редактируеми в админ панела). Резултатът се
+   показва в менюто досущ като обикновени продукти, но не идва от
+   MENU_DATA. */
 function buildTodaysSoupMenuItems(){
   const soups = getTodaysSoups().map((s, i) => ({
     id: "soup-today-" + i,
@@ -1088,17 +1085,7 @@ function buildTodaysSoupMenuItems(){
     photo: s.photo || "",
     nut: { kcal:190, p:4, c:22, f:8 },
   }));
-  const tarator = {
-    id: "tarator-today",
-    name: "Таратор",
-    price: TARATOR_PRICE,
-    weight: "300 мл.",
-    desc: "",
-    photo: "img/soups/tarator.jpg",
-    nut: { kcal:120, p:5, c:8, f:7 },
-    isTarator: true,
-  };
-  return [...soups, tarator];
+  return soups;
 }
 
 function initMenu(){
@@ -1107,6 +1094,7 @@ function initMenu(){
   if(!menuGrid || !tabsWrap) return;
 
   initNutritionCalculator("calcWidget");
+  initReorderStrip(document.getElementById("reorderMount"), { withFavorites: true });
 
   let activeIdx = 1; // старт директно на "Салати"
   if(location.hash === "#menuTabs"){ activeIdx = -1; } // дошли сме от бутон "Направи си сам"
@@ -1373,11 +1361,74 @@ function initMenu(){
       return { kcal, p, c, f };
     }
 
+    /* ---- Запазени любими за този вид (салата / купа / бургер) ---- */
+    function favoritesHere(){ return getFavorites().filter(f=>f.type === type); }
+    function favBarHtml(){
+      const favs = favoritesHere();
+      if(!favs.length) return "";
+      return `<div class="fav-bar" id="favBar">
+        <span class="fav-label">Запазени любими</span>
+        <div class="fav-chips">${favs.map(f=>`
+          <span class="fav-chip">
+            <button type="button" class="fav-chip-load" data-fav-load="${f.id}" title="Зареди тази комбинация">${escapeHtml(f.name)}</button>
+            <button type="button" class="fav-chip-del" data-fav-del="${f.id}" aria-label="Изтрий ${escapeHtml(f.name)}" title="Изтрий">×</button>
+          </span>`).join("")}
+        </div>
+      </div>`;
+    }
+    function applyFavorite(fav){
+      let missing = 0;
+      Object.keys(selected).forEach(k=>delete selected[k]);
+      selectedDressings = {};
+      if(builder.hasSmallSize) size = fav.size === "small" ? "small" : "large";
+      Object.entries(fav.sel || {}).forEach(([id,q])=>{
+        if(!builder.ingredients.find(i=>i.id===id)){ missing++; return; }
+        selected[id] = Math.min(MAX_INGREDIENT_QTY, Math.max(1, parseInt(q,10)||1));
+      });
+      if(builder.hasDressing){
+        Object.entries(fav.dr || {}).forEach(([id,q])=>{
+          if(!builder.dressings.find(d=>d.id===id)){ missing++; return; }
+          selectedDressings[id] = Math.min(MAX_INGREDIENT_QTY, Math.max(1, parseInt(q,10)||1));
+        });
+      }
+      renderGroups();
+      showToast(missing
+        ? `Заредихме „${fav.name}“. Някои съставки вече не са налични и бяха пропуснати.`
+        : `Заредихме „${fav.name}“ — провери избора и я добави в количката.`);
+    }
+    async function saveCurrentAsFavorite(){
+      if(selectedCount() < 1) return;
+      const mine = favoritesHere();
+      const baseName = type === "salad" ? "Моята салата" : type === "bowl" ? "Моята купа" : "Моят бургер";
+      const asked = await askForFavoriteName(baseName);
+      if(asked === null) return; // отказ
+      let name = asked;
+      const all = getFavorites();
+      const same = all.find(f=>f.type === type && f.name.toLowerCase() === (name || "").toLowerCase());
+      if(!same && mine.length >= MAX_FAVORITES_PER_TYPE){
+        showToast(`Имаш ${MAX_FAVORITES_PER_TYPE} запазени комбинации — изтрий една, за да запазиш нова.`);
+        return;
+      }
+      if(!name) name = mine.length ? `${baseName} ${mine.length + 1}` : baseName;
+      const entry = {
+        id: "fav" + Date.now() + Math.floor(Math.random()*1000),
+        name, type, size: builder.hasSmallSize ? size : "large",
+        sel: { ...selected }, dr: { ...selectedDressings }, created: Date.now(),
+      };
+      if(same){ entry.id = same.id; all[all.indexOf(same)] = entry; }
+      else all.push(entry);
+      saveFavorites(all);
+      initReorderStrip(document.getElementById("reorderMount"), { withFavorites: true });
+      renderGroups();
+      showToast(same ? `Обновихме „${name}“ в любимите.` : `„${name}“ е запазена в любимите.`);
+    }
+
     function renderGroups(){
       mount.innerHTML = `
         <div class="builder-wrap">
           <div>
             <p style="color:var(--charcoal-soft); margin-bottom:24px;">${builder.intro}</p>
+            ${favBarHtml()}
             ${builder.hasSmallSize ? `
             <div class="builder-step">
               <h4><span class="num">1</span>Избери размер</h4>
@@ -1430,6 +1481,7 @@ function initMenu(){
             </div>
             <div class="bowl-actions">
               <button class="btn btn-primary btn-block" id="bowlAddBtn" disabled>${builder.finishLabel}</button>
+              <button class="btn btn-outline btn-block" id="bowlFavBtn" disabled>Запази като любима</button>
               <button class="btn btn-ghost btn-block" id="bowlResetBtn">Изчисти избора</button>
             </div>
           </div>
@@ -1443,6 +1495,27 @@ function initMenu(){
       const bowlTotal = mount.querySelector("#bowlTotal");
       const addBtn = mount.querySelector("#bowlAddBtn");
       const resetBtn = mount.querySelector("#bowlResetBtn");
+      const favBtn = mount.querySelector("#bowlFavBtn");
+      const favBar = mount.querySelector("#favBar");
+
+      if(favBtn) favBtn.addEventListener("click", saveCurrentAsFavorite);
+      if(favBar){
+        favBar.addEventListener("click", (e)=>{
+          const loadBtn = e.target.closest("[data-fav-load]");
+          const delBtn = e.target.closest("[data-fav-del]");
+          if(loadBtn){
+            const fav = getFavorites().find(f=>f.id === loadBtn.dataset.favLoad);
+            if(fav) applyFavorite(fav);
+          } else if(delBtn){
+            const fav = getFavorites().find(f=>f.id === delBtn.dataset.favDel);
+            if(fav && confirm(`Да изтрия ли „${fav.name}“ от любимите?`)){
+              saveFavorites(getFavorites().filter(f=>f.id !== fav.id));
+              initReorderStrip(document.getElementById("reorderMount"), { withFavorites: true });
+              renderGroups();
+            }
+          }
+        });
+      }
 
       if(builder.hasSmallSize){
         mount.querySelectorAll("[data-diy-size]").forEach(btn=>{
@@ -1561,7 +1634,8 @@ function initMenu(){
         }
         const note = await askForItemNote();
         const cartName = builder.label + sizeSuffix();
-        addToCart({ name: cartName, price: finalPrice * EUR_RATE, details, nut: selectedNutrition(), note });
+        const recipe = { type, size: builder.hasSmallSize ? size : "large", sel: { ...selected }, dr: { ...selectedDressings } };
+        addToCart({ name: cartName, price: finalPrice * EUR_RATE, details, nut: selectedNutrition(), note, recipe });
         if(belowMin){
           showToast(`${cartName} е добавена в количката 🛒 — закръглена до минималната стойност от ${finalPrice.toFixed(2)} €.`);
         } else {
@@ -1630,6 +1704,7 @@ function initMenu(){
         mount.querySelector("#bowlC").textContent = Math.round(nutrition.c);
         mount.querySelector("#bowlF").textContent = Math.round(nutrition.f);
         addBtn.disabled = count < 1;
+        if(favBtn) favBtn.disabled = count < 1;
       }
       renderSummary();
     }
@@ -1677,6 +1752,292 @@ function initMenu(){
   renderItems();
 }
 
+/* =========================================================
+   ПОРЪЧАЙ ОТНОВО и ЗАПАЗЕНИ ЛЮБИМИ (само в браузъра на клиента,
+   без профили и без нищо в базата данни)
+   ========================================================= */
+const LAST_ORDER_KEY = "vitamina_last_order_v1";
+const FAVORITES_KEY = "vitamina_favorites_v1";
+const MAX_FAVORITES_PER_TYPE = 8;
+
+/* Запомня последната изпратена поръчка (само на това устройство), за да
+   може следващия път да се добави наново с едно натискане. */
+function rememberOrderForReorder(cart){
+  try{
+    const lines = cart.map(l=>({
+      id: l.id || null, name: l.name, details: l.details || "",
+      nut: l.nut || null, note: l.note || "", qty: l.qty, recipe: l.recipe || null,
+    }));
+    localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({ date: new Date().toISOString(), lines }));
+  }catch(e){ /* пълна памет/частен режим — просто няма да се запомни */ }
+}
+function getLastOrderForReorder(){
+  try{
+    const o = JSON.parse(localStorage.getItem(LAST_ORDER_KEY));
+    return o && Array.isArray(o.lines) && o.lines.length ? o : null;
+  }catch(e){ return null; }
+}
+
+/* Цена (в евро) на салата/купа/бургер по запазена рецепта, с ТЕКУЩИТЕ
+   цени и правила за минимална стойност. Трябва да следва същата логика
+   като renderBuilder (ingPrice / currentMinPrice / selectedTotal).
+   Връща null, ако някоя съставка вече я няма. */
+function priceBuilderRecipe(recipe){
+  const builder = recipe && BUILDERS[recipe.type];
+  if(!builder) return null;
+  const small = !!(builder.hasSmallSize && recipe.size === "small");
+  const noHalf = builder.noHalfIds || [];
+  let total = 0, count = 0;
+  const sel = recipe.sel || {};
+  for(const id of Object.keys(sel)){
+    const ing = builder.ingredients.find(i=>i.id===id);
+    if(!ing) return null;
+    const qty = Math.min(MAX_INGREDIENT_QTY, Math.max(1, parseInt(sel[id],10)||1));
+    let p = ing.price;
+    if(small && !noHalf.includes(ing.id)) p = (ing.price === 1.37) ? 0.78 : ing.price / 2;
+    total += unitEUR(p) * qty;
+    count += qty;
+  }
+  if(builder.hasDressing){
+    const dr = recipe.dr || {};
+    for(const id of Object.keys(dr)){
+      const d = builder.dressings.find(x=>x.id===id);
+      if(!d) return null;
+      const qty = Math.min(MAX_INGREDIENT_QTY, Math.max(1, parseInt(dr[id],10)||1));
+      total += unitEUR(d.price) * qty;
+    }
+  }
+  total = Math.round(total * 100) / 100;
+  let min = builder.minPrice || 0;
+  if(recipe.type === "salad" && builder.minPriceHighCount != null && count >= builder.minPriceHighCountThreshold) min = builder.minPriceHighCount;
+  if(recipe.type === "bowl" && builder.minPriceWithTuna != null && sel[builder.tunaIngredientId] > 0) min = builder.minPriceWithTuna;
+  return Math.max(total, min);
+}
+
+/* Справка "id в количката" -> текущ продукт от менюто (с размер). */
+function buildReorderMenuLookup(){
+  const map = {};
+  MENU_DATA.forEach(cat=>{
+    if(cat.category === "Супи") return;
+    cat.items.forEach(item=>{
+      if(item.sizes){
+        item.sizes.forEach((s,i)=>{
+          map[item.id + "-size" + i] = { name: item.name + ` (${s.label})`, price: s.price, nut: s.nut || null };
+        });
+      } else {
+        map[item.id] = { name: item.name, price: item.price, nut: item.nut || null };
+        if(item.smallSize){
+          map[item.id + "-small"] = { name: item.name + ` (${item.smallSize.weight})`, price: item.smallSize.price, nut: null };
+        }
+      }
+    });
+  });
+  return map;
+}
+
+/* Превръща запомнената поръчка в редове за количката с ТЕКУЩИТЕ цени.
+   Продукти, които вече не се предлагат, се връщат отделно. */
+function resolveReorderLines(order){
+  const menuMap = buildReorderMenuLookup();
+  const soups = buildTodaysSoupMenuItems();
+  const available = [], unavailable = [];
+  order.lines.forEach(l=>{
+    const qty = Math.max(1, parseInt(l.qty,10) || 1);
+    let r = null;
+    if(l.recipe){
+      const eur = priceBuilderRecipe(l.recipe);
+      if(eur != null) r = { id:null, name:l.name, details:l.details || "", nut:l.nut || null, note:l.note || "", price: eur * EUR_RATE, recipe:l.recipe };
+    } else if(l.id && String(l.id).indexOf("soup-today-") === 0){
+      const s = soups.find(x=>x.name === l.name);
+      if(s) r = { id:s.id, name:s.name, details:"", nut:s.nut || null, note:l.note || "", price:s.price };
+    } else if(l.id && menuMap[l.id]){
+      const m = menuMap[l.id];
+      r = { id:l.id, name:m.name, details:"", nut:m.nut, note:l.note || "", price:m.price };
+    }
+    if(r){ r.qty = qty; available.push(r); }
+    else unavailable.push(l.name);
+  });
+  return { available, unavailable };
+}
+
+function addReorderLinesToCart(lines){
+  const cart = getCart();
+  lines.forEach((r, i)=>{
+    if(r.id && !r.details){
+      const ex = cart.find(l=> l.id === r.id && !l.details && (l.note||"") === (r.note||""));
+      if(ex){ ex.qty += r.qty; return; }
+    }
+    cart.push({
+      cartId: "c" + Date.now() + "r" + i + Math.floor(Math.random()*1000),
+      id: r.id || null, name: r.name, price: r.price,
+      details: r.details || "", nut: r.nut || null, note: r.note || "", minNote: "",
+      qty: r.qty, recipe: r.recipe || null,
+    });
+  });
+  saveCart(cart);
+}
+
+function reorderProductsWord(n){ return n === 1 ? "1 продукт" : n + " продукта"; }
+function reorderShortDate(iso){
+  const d = new Date(iso);
+  return String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0");
+}
+function reorderUnavailableText(names){
+  const shown = names.slice(0,2).join(", ") + (names.length > 2 ? ` и още ${names.length - 2}` : "");
+  return `${shown} ${names.length > 1 ? "не са налични" : "не е наличен"} и не ${names.length > 1 ? "бяха добавени" : "беше добавен"}.`;
+}
+function doReorderAdd(resolved, onAdded){
+  if(!resolved.available.length) return;
+  addReorderLinesToCart(resolved.available);
+  const n = resolved.available.reduce((s,r)=>s + r.qty, 0);
+  let msg = `Добавихме ${reorderProductsWord(n)} от последната ти поръчка в количката.`;
+  if(resolved.unavailable.length) msg += " " + reorderUnavailableText(resolved.unavailable);
+  showToast(msg);
+  if(typeof onAdded === "function") onAdded();
+}
+
+/* Малкият прозорец "Прегледай": списъкът е с ограничена височина и се
+   скролира, така че не расте дори при много продукти. */
+function openReorderPreview(order, resolved, onAdded){
+  const overlay = document.createElement("div");
+  overlay.className = "note-modal-overlay";
+  const rows = resolved.available.map(r=>`
+    <div class="reorder-row">
+      <div class="reorder-row-main">
+        <span class="reorder-qty">${r.qty} ×</span>
+        <span class="reorder-name">${escapeHtml(r.name)}</span>
+        <span class="reorder-price">${fmt(r.price * r.qty)} €</span>
+      </div>
+      ${r.details ? `<div class="reorder-row-sub">${escapeHtml(r.details)}</div>` : ""}
+      ${r.note ? `<div class="reorder-row-sub">Бележка: ${escapeHtml(r.note)}</div>` : ""}
+    </div>`).join("");
+  const total = resolved.available.reduce((s,r)=>s + r.price * r.qty, 0);
+  overlay.innerHTML = `
+    <div class="note-modal reorder-modal" role="dialog" aria-modal="true" aria-label="Последна поръчка">
+      <h3>Последна поръчка</h3>
+      <p>От ${reorderShortDate(order.date)} — цените са актуални за днес.</p>
+      <div class="reorder-list">${rows}</div>
+      ${resolved.unavailable.length ? `<div class="reorder-unavailable">${escapeHtml(reorderUnavailableText(resolved.unavailable))}</div>` : ""}
+      <div class="reorder-total"><span>Общо</span><b>${fmt(total)} €</b></div>
+      <div class="note-modal-actions">
+        <button type="button" class="btn btn-ghost" data-reorder-close>Затвори</button>
+        <button type="button" class="btn btn-primary" data-reorder-confirm>Добави всичко в количката</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  function close(){
+    document.removeEventListener("keydown", onKey);
+    overlay.classList.add("closing");
+    setTimeout(()=> overlay.remove(), 150);
+  }
+  function onKey(e){ if(e.key === "Escape") close(); }
+  document.addEventListener("keydown", onKey);
+  overlay.addEventListener("click", (e)=>{ if(e.target === overlay) close(); });
+  overlay.querySelector("[data-reorder-close]").addEventListener("click", close);
+  overlay.querySelector("[data-reorder-confirm]").addEventListener("click", ()=>{
+    close();
+    doReorderAdd(resolved, onAdded);
+  });
+  const confirmBtn = overlay.querySelector("[data-reorder-confirm]");
+  requestAnimationFrame(()=> confirmBtn.focus());
+}
+
+/* ---- Запазени любими (комбинации от "Направи си сам") ---- */
+function getFavorites(){
+  try{
+    const f = JSON.parse(localStorage.getItem(FAVORITES_KEY));
+    return Array.isArray(f) ? f : [];
+  }catch(e){ return []; }
+}
+function saveFavorites(list){
+  try{ localStorage.setItem(FAVORITES_KEY, JSON.stringify(list)); }catch(e){}
+}
+function askForFavoriteName(placeholder){
+  return new Promise((resolve)=>{
+    const overlay = document.createElement("div");
+    overlay.className = "note-modal-overlay";
+    overlay.innerHTML = `
+      <div class="note-modal" role="dialog" aria-modal="true" aria-label="Запази като любима">
+        <h3>Запази като любима</h3>
+        <p>Дай име на тази комбинация, за да я намираш лесно следващия път.</p>
+        <input type="text" id="favNameInput" maxlength="30" placeholder="${escapeHtml(placeholder)}" autocomplete="off">
+        <div class="note-modal-actions">
+          <button type="button" class="btn btn-ghost" data-fav-cancel>Отказ</button>
+          <button type="button" class="btn btn-primary" data-fav-save>Запази</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector("#favNameInput");
+    requestAnimationFrame(()=> input.focus());
+    function close(value){
+      overlay.classList.add("closing");
+      setTimeout(()=> overlay.remove(), 150);
+      resolve(value);
+    }
+    overlay.querySelector("[data-fav-cancel]").addEventListener("click", ()=> close(null));
+    overlay.querySelector("[data-fav-save]").addEventListener("click", ()=> close(input.value.trim()));
+    overlay.addEventListener("click", (e)=>{ if(e.target === overlay) close(null); });
+    input.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){ e.preventDefault(); close(input.value.trim()); }
+      if(e.key === "Escape") close(null);
+    });
+  });
+}
+
+/* Тънка лента най-горе в менюто (и в празна количка): "Поръчай отново"
+   и/или връзка към запазените любими. Показва се само ако има какво. */
+function initReorderStrip(mount, opts){
+  if(!mount) return;
+  opts = opts || {};
+  const order = getLastOrderForReorder();
+  const resolved = order ? resolveReorderLines(order) : { available:[], unavailable:[] };
+  const hasReorder = resolved.available.length > 0;
+  const favs = opts.withFavorites ? getFavorites() : [];
+  if(!hasReorder && !favs.length){ mount.innerHTML = ""; return; }
+
+  const qtyTotal = resolved.available.reduce((s,r)=>s + r.qty, 0);
+  const priceTotal = resolved.available.reduce((s,r)=>s + r.price * r.qty, 0);
+  const title = hasReorder ? "Поръчай отново" : "Запазени любими";
+  const sub = hasReorder
+    ? `Последна поръчка (${reorderShortDate(order.date)}): ${reorderProductsWord(qtyTotal)}, ${fmt(priceTotal)} €`
+    : `${favs.length === 1 ? "1 запазена комбинация" : favs.length + " запазени комбинации"} от „Направи си сам“`;
+
+  mount.innerHTML = `
+    <div class="reorder-bar">
+      <div class="reorder-info">
+        <span class="reorder-title">${title}</span>
+        <span class="reorder-sub">${escapeHtml(sub)}</span>
+      </div>
+      <div class="reorder-actions">
+        ${hasReorder ? `<button type="button" class="btn btn-ghost btn-sm" data-reorder-view>Прегледай</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-reorder-add>Поръчай отново</button>` : ""}
+        ${favs.length ? `<button type="button" class="btn btn-ghost btn-sm" data-open-favs>${hasReorder ? `Любими (${favs.length})` : "Отвори любимите"}</button>` : ""}
+      </div>
+    </div>`;
+
+  const viewBtn = mount.querySelector("[data-reorder-view]");
+  const addBtn = mount.querySelector("[data-reorder-add]");
+  const favBtn = mount.querySelector("[data-open-favs]");
+  if(viewBtn) viewBtn.addEventListener("click", ()=> openReorderPreview(order, resolved, opts.onAdded));
+  if(addBtn) addBtn.addEventListener("click", ()=>{
+    addBtn.disabled = true;
+    setTimeout(()=>{ addBtn.disabled = false; }, 1500);
+    doReorderAdd(resolved, opts.onAdded);
+  });
+  if(favBtn) favBtn.addEventListener("click", ()=>{
+    const diyTab = document.querySelector("#menuTabs .menu-tab-diy");
+    if(!diyTab) return;
+    diyTab.click();
+    const newest = favs.slice().sort((a,b)=>(b.created||0)-(a.created||0))[0];
+    if(newest && newest.type !== "salad"){
+      const card = document.querySelector(`.diy-type-card[data-type="${newest.type}"]`);
+      if(card) card.click();
+    }
+    const target = document.getElementById("builderMount");
+    if(target) target.scrollIntoView({ behavior:"smooth", block:"start" });
+  });
+}
+
 /* ================= CART / ORDER PAGE ================= */
 function initCart(){
   if(!document.getElementById("cartList")) return; // не сме на страницата с количката
@@ -1696,7 +2057,6 @@ function initCart(){
       </div>
       <div class="daily-banner-text">
         <h3>Супа${soups.length>1?"и":""} на деня: ${soups.map(s=>escapeHtml(s.name)).join(" · ")}</h3>
-        <h3 style="margin-top:6px;">Таратор: ${fmt(TARATOR_PRICE)} € — по желание с ядки (+${fmt(TARATOR_NUTS_ADDON_PRICE)} €)</h3>
         <p style="margin-top:10px;">Разгледай <a href="menu.html" style="text-decoration:underline;">цялото меню</a> за всички салати, купи, бургери и напитки.</p>
       </div>
     `;
@@ -1747,8 +2107,11 @@ function initCart(){
   // без да е нужно да презареждаш страницата.
   setInterval(()=>{ applyOrderingWindow(); renderCart(); }, 30000);
 
+  const reorderMount = document.getElementById("reorderMount");
+  let reorderSuppressed = false; // след изпратена поръчка не предлагаме веднага същото
   function renderCart(){
     const cart = getCart();
+    if(reorderMount) reorderMount.style.display = (cart.length === 0 && !reorderSuppressed) ? "" : "none";
     if(cart.length === 0){
       cartList.innerHTML = "";
       cartEmpty.classList.remove("hidden");
@@ -1809,6 +2172,8 @@ function initCart(){
       if(form) form.reset();
       applyOrderingWindow();
       if(phoneInput) phoneInput.focus();
+      reorderSuppressed = false;
+      initReorderStrip(reorderMount, { onAdded: renderCart });
       renderCart();
     });
   }
@@ -1845,11 +2210,13 @@ function initCart(){
       }
 
       const order = createOrder({ name, phone, time, note });
+      rememberOrderForReorder(cart);
       const pushed = await pushOrderToVitaminaSystem(order);
 
       clearCart();
       if(form) form.reset();
       applyOrderingWindow();
+      reorderSuppressed = true;
       renderCart();
       showCheckoutSuccess();
       if(pushed){
@@ -1869,6 +2236,7 @@ function initCart(){
     window.open(CONTACT_INFO.messenger, "_blank");
   });
 
+  initReorderStrip(reorderMount, { onAdded: renderCart });
   renderCart();
 }
 
