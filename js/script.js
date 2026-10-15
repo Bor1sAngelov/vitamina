@@ -112,9 +112,7 @@ function initSupabaseSync(){
     supabaseReady = true;
     loadOrdersFromSupabase();
     attachOrderingPausedListener(()=>{});
-    getSoupScheduleFromSupabase().then(schedule=>{
-      if(schedule) localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
-    });
+    pullSoupScheduleAndRefresh();
     attachSoupScheduleListener(()=>{});
     loadApplicationsFromSupabase();
   }catch(err){
@@ -261,10 +259,37 @@ function attachSoupScheduleListener(onChange){
       const schedule = await getSoupScheduleFromSupabase();
       if(schedule){
         localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
+        refreshSoupsIfChanged();
         if(typeof onChange === "function") onChange(schedule);
       }
     })
     .subscribe();
+}
+
+/* ---- Освежаване на супите на вече показана страница ----
+   Супите се рисуват веднага от записаното в браузъра (бързо), а новото
+   разписание от Supabase идва малко по-късно. Преди това то само се
+   записваше и се виждаше чак при следващо зареждане. Сега, ако днешните
+   супи са се променили (нова версия в базата, или е минал денят), се
+   праща събитие "vitamina:soups-updated" и всяка страница прерисува
+   своите супи. */
+let renderedSoupSignature = null;
+function soupsSignature(){
+  return JSON.stringify(getTodaysSoups().map(s=>[s.name, s.photo || ""]));
+}
+function refreshSoupsIfChanged(){
+  const sig = soupsSignature();
+  if(renderedSoupSignature === null){ renderedSoupSignature = sig; return; }
+  if(sig === renderedSoupSignature) return;
+  renderedSoupSignature = sig;
+  window.dispatchEvent(new Event("vitamina:soups-updated"));
+}
+async function pullSoupScheduleAndRefresh(){
+  try{
+    const schedule = await getSoupScheduleFromSupabase();
+    if(schedule) localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
+  }catch(err){ /* без връзка — оставаме на записаното */ }
+  refreshSoupsIfChanged();
 }
 
 function isOrderingPausedByAdmin(){
@@ -852,7 +877,8 @@ function initNav(){
 /* ================= HOME PAGE ================= */
 function initHome(){
   const soupCard = document.getElementById("soupCard");
-  if(soupCard){
+  function renderSoupCard(){
+    if(!soupCard) return;
     const soups = getTodaysSoups();
     soupCard.innerHTML = `
       <div class="stamp floaty">
@@ -871,6 +897,8 @@ function initHome(){
       <a href="menu.html" class="btn btn-primary">Поръчай сега</a>
     `;
   }
+  renderSoupCard();
+  window.addEventListener("vitamina:soups-updated", renderSoupCard);
 
   const galleryStrip = document.getElementById("galleryStrip");
   if(galleryStrip){
@@ -1720,6 +1748,15 @@ function initMenu(){
     renderItems();
   });
 
+  /* Супите се сменят от админ панела — ако са се променили, докато
+     страницата е отворена, прерисуваме таба "Супи" и калкулатора. */
+  window.addEventListener("vitamina:soups-updated", ()=>{
+    initNutritionCalculator("calcWidget");
+    if(activeIdx !== -1 && MENU_DATA[activeIdx] && MENU_DATA[activeIdx].category === "Супи"){
+      renderItems();
+    }
+  });
+
   /* Панелът с избрания готов продукт (#detailPanel) е "sticky" — докато
      скролираме списъка, той увисва залепен най-отгоре. За да не заема
      твърде много място в залепнало състояние, добавяме клас "is-stuck"
@@ -2047,7 +2084,8 @@ function initCart(){
   attachOrderingPausedListener((paused)=>{ if(paused) showOrderingPausedOverlay(); });
 
   const banner = document.getElementById("dailyBanner");
-  if(banner){
+  function renderDailyBanner(){
+    if(!banner) return;
     const soups = getTodaysSoups();
     banner.innerHTML = `
       <div class="stamp floaty">
@@ -2061,6 +2099,8 @@ function initCart(){
       </div>
     `;
   }
+  renderDailyBanner();
+  window.addEventListener("vitamina:soups-updated", renderDailyBanner);
 
   const cartList = document.getElementById("cartList");
   const cartEmpty = document.getElementById("cartEmpty");
@@ -2898,6 +2938,7 @@ function initViewer(){
 
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", ()=>{
+  renderedSoupSignature = soupsSignature();
   initSupabaseSync();
   initNav();
   initLeafField();
@@ -2909,4 +2950,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
   initViewer();
   initReveal();
   if(!document.getElementById("adminLoginScreen") && !document.getElementById("viewerLoginScreen")) trackVisit();
+
+  /* Телефоните държат табовете отворени с дни. Когато клиентът се върне
+     към страницата, проверяваме отново за нови супи (и за нов ден). */
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.visibilityState === "visible") pullSoupScheduleAndRefresh();
+  });
+  window.addEventListener("pageshow", (e)=>{
+    if(e.persisted) pullSoupScheduleAndRefresh();
+  });
 });
