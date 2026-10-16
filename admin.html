@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20261012">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="logo-vitamina.png" type="image/png">
 </head>
@@ -121,6 +121,13 @@
 
         <!-- СУПА НА ДЕНЯ -->
         <div id="tab-soup" style="display:none;">
+          <div class="ordering-pause-bar">
+            <span class="status-pill status-done" id="soupSoldOutStatus">Супите са налични</span>
+            <button class="btn btn-danger btn-sm" id="soupSoldOutToggle">Спри супите (изчерпано количество)</button>
+          </div>
+          <p class="form-note" style="margin:0 0 20px; max-width:640px;">
+            Когато спреш супите, те остават видими на сайта с надпис „Изчерпано количество“ и не могат да се добавят в количката. Супите се пускат автоматично отново на следващия ден.
+          </p>
           <div class="admin-status" id="adminSoupStatus"></div>
           <div id="soupScheduleEditor"><!-- попълва се от script.js --></div>
         </div>
@@ -157,7 +164,7 @@
 <div id="printReceipt"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="js/data.js"></script>
-<script src="js/script.js"></script>
+<script src="js/data.js?v=20261012"></script>
+<script src="js/script.js?v=20261012"></script>
 </body>
 </html>

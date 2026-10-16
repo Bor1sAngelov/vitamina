@@ -241,11 +241,18 @@ async function saveWeeklySoupSchedule(schedule){
     .upsert([{ key: "soupSchedule", value: schedule }], { onConflict: ["key"] });
   if(error) console.warn("Не може да запази менюто със супите в Supabase:", error);
 }
+/* iPhone (WebKit) понякога връща запомнен отговор на едно и също GET
+   заявяване. Добавяме към select безобиден псевдоним с уникално име —
+   адресът е различен при всяко извикване, така че се взема винаги
+   пресен отговор (без да пипаме заглавията, за да не чупим CORS). */
+function noCacheSelect(columns){
+  return columns + ",nc" + Date.now() + Math.floor(Math.random() * 1000000) + ":key";
+}
 async function getSoupScheduleFromSupabase(){
   if(!supabaseReady || !supabaseClient) return null;
   const { data, error } = await supabaseClient
     .from("settings")
-    .select("value")
+    .select(noCacheSelect("value"))
     .eq("key", "soupSchedule")
     .single();
   if(error || !data) return null;
@@ -257,11 +264,11 @@ function attachSoupScheduleListener(onChange){
     .channel("soup_schedule_changes")
     .on("postgres_changes", { event: "*", schema: "public", table: "settings" }, async () => {
       const schedule = await getSoupScheduleFromSupabase();
-      if(schedule){
-        localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
-        refreshSoupsIfChanged();
-        if(typeof onChange === "function") onChange(schedule);
-      }
+      if(schedule) localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
+      const soldOut = await getSoupsSoldOutFromSupabase();
+      if(soldOut) localStorage.setItem(SOUPS_SOLDOUT_KEY, JSON.stringify(soldOut));
+      refreshSoupsIfChanged();
+      if(schedule && typeof onChange === "function") onChange(schedule);
     })
     .subscribe();
 }
@@ -275,7 +282,7 @@ function attachSoupScheduleListener(onChange){
    своите супи. */
 let renderedSoupSignature = null;
 function soupsSignature(){
-  return JSON.stringify(getTodaysSoups().map(s=>[s.name, s.photo || ""]));
+  return JSON.stringify({ soups: getTodaysSoups().map(s=>[s.name, s.photo || ""]), soldOut: areSoupsSoldOut() });
 }
 function refreshSoupsIfChanged(){
   const sig = soupsSignature();
@@ -284,12 +291,61 @@ function refreshSoupsIfChanged(){
   renderedSoupSignature = sig;
   window.dispatchEvent(new Event("vitamina:soups-updated"));
 }
+let lastSoupPullAt = 0;
+let soupPullInFlight = null;
 async function pullSoupScheduleAndRefresh(){
+  // една заявка наведнъж и не по-често от веднъж на 4 сек. (много събития идват накуп)
+  if(soupPullInFlight) return soupPullInFlight;
+  if(Date.now() - lastSoupPullAt < 4000) { refreshSoupsIfChanged(); return; }
+  lastSoupPullAt = Date.now();
+  soupPullInFlight = pullSoupScheduleAndRefreshNow().finally(()=>{ soupPullInFlight = null; });
+  return soupPullInFlight;
+}
+async function pullSoupScheduleAndRefreshNow(){
   try{
     const schedule = await getSoupScheduleFromSupabase();
     if(schedule) localStorage.setItem(SOUP_SCHEDULE_KEY, JSON.stringify(schedule));
+    const soldOut = await getSoupsSoldOutFromSupabase();
+    if(soldOut) localStorage.setItem(SOUPS_SOLDOUT_KEY, JSON.stringify(soldOut));
   }catch(err){ /* без връзка — оставаме на записаното */ }
   refreshSoupsIfChanged();
+}
+
+/* ---- Супите са изчерпани (бутон в админ панела) ----
+   Супите остават на сайта, но с надпис "Изчерпано количество" и без
+   възможност за добавяне в количката. Важи само за деня, в който е
+   зададено — на следващия ден супите автоматично са налични отново. */
+const SOUPS_SOLDOUT_KEY = "vitamina_soups_soldout_v1";
+function soupDateKey(d = new Date()){
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function areSoupsSoldOut(){
+  try{
+    const v = JSON.parse(localStorage.getItem(SOUPS_SOLDOUT_KEY));
+    return !!v && v.soldOut === true && v.date === soupDateKey();
+  }catch(e){ return false; }
+}
+function setSoupsSoldOut(soldOut){
+  const value = { soldOut: !!soldOut, date: soupDateKey() };
+  localStorage.setItem(SOUPS_SOLDOUT_KEY, JSON.stringify(value));
+  refreshSoupsIfChanged();
+  if(!supabaseReady || !supabaseClient) return;
+  supabaseClient
+    .from("settings")
+    .upsert([{ key: "soupsSoldOut", value }], { onConflict: ["key"] })
+    .then(({ error }) => {
+      if(error) console.warn("Не може да запази статуса на супите в Supabase:", error);
+    });
+}
+async function getSoupsSoldOutFromSupabase(){
+  if(!supabaseReady || !supabaseClient) return null;
+  const { data, error } = await supabaseClient
+    .from("settings")
+    .select(noCacheSelect("value"))
+    .eq("key", "soupsSoldOut")
+    .single();
+  if(error || !data) return null;
+  return data.value || null;
 }
 
 function isOrderingPausedByAdmin(){
@@ -880,6 +936,7 @@ function initHome(){
   function renderSoupCard(){
     if(!soupCard) return;
     const soups = getTodaysSoups();
+    const soldOut = areSoupsSoldOut();
     soupCard.innerHTML = `
       <div class="stamp floaty">
         <span class="stamp-eyebrow">Днес</span>
@@ -891,6 +948,7 @@ function initHome(){
         ${soups.map(s => `
           <div class="soup-of-day-item">
             <h3>${escapeHtml(s.name)}</h3>
+            ${soldOut ? `<p class="soup-soldout-note">Изчерпано количество</p>` : ""}
           </div>
         `).join("")}
       </div>
@@ -1072,7 +1130,7 @@ function renderDetailPanel(item){
       : (item.smallSize && view.size === "small" ? `<p class="sub" style="margin-top:10px; opacity:.7; font-style:italic;">Калориите за по-малкия грамаж не са известни.</p>` : "")}
     ${item.isTarator ? `<label class="tarator-nuts-toggle"><input type="checkbox" data-tarator-nuts-detail> Добави ядки (+${fmt(TARATOR_NUTS_ADDON_PRICE)} €)</label>` : ""}
     <div class="dp-price">${fmt(view.price)} €</div>
-    <button class="btn btn-primary btn-block" style="margin-top:16px;" data-add-detail="${item.id}">Добави в количката</button>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" data-add-detail="${item.id}"${item.soldOut ? " disabled" : ""}>${item.soldOut ? "Изчерпано количество" : "Добави в количката"}</button>
   `;
   if(item.sizes || item.smallSize){
     panel.querySelectorAll("[data-size]").forEach(btn=>{
@@ -1104,7 +1162,9 @@ function renderDetailPanel(item){
    показва в менюто досущ като обикновени продукти, но не идва от
    MENU_DATA. */
 function buildTodaysSoupMenuItems(){
+  const soldOutNow = areSoupsSoldOut();
   const soups = getTodaysSoups().map((s, i) => ({
+    soldOut: soldOutNow,
     id: "soup-today-" + i,
     name: s.name,
     price: SOUP_PRICE,
@@ -1156,7 +1216,7 @@ function initMenu(){
     menuGrid.innerHTML = items.map(item => {
       const view = getEffectiveItemView(item);
       return `
-      <div class="menu-item" data-id="${item.id}">
+      <div class="menu-item${item.soldOut ? " sold-out" : ""}" data-id="${item.id}">
         ${item.photo ? `<img src="${item.photo}" class="menu-item-photo" alt="${escapeHtml(item.name)}" width="400" height="300" loading="lazy" decoding="async">` : `<div class="img-placeholder ph-card"><span class="ph-icon">📷</span><span class="ph-label">Снимка предстои</span></div>`}
         <div class="menu-item-top">
           <h4>${escapeHtml(item.name)}</h4>
@@ -1174,7 +1234,7 @@ function initMenu(){
           </div>
         ` : (item.weight ? `<span class="weight-pill">${escapeHtml(item.weight)}</span>` : "")}
         ${item.isTarator ? `<label class="tarator-nuts-toggle"><input type="checkbox" data-tarator-nuts> Добави ядки (+${fmt(TARATOR_NUTS_ADDON_PRICE)} €)</label>` : ""}
-        <button class="btn btn-secondary btn-sm btn-block" data-add="${item.id}" style="margin-top:12px;">+ Добави в количката</button>
+        <button class="btn btn-secondary btn-sm btn-block" data-add="${item.id}" style="margin-top:12px;"${item.soldOut ? " disabled" : ""}>${item.soldOut ? "Изчерпано количество" : "+ Добави в количката"}</button>
       </div>
     `;
     }).join("");
@@ -1886,7 +1946,7 @@ function resolveReorderLines(order){
       if(eur != null) r = { id:null, name:l.name, details:l.details || "", nut:l.nut || null, note:l.note || "", price: eur * EUR_RATE, recipe:l.recipe };
     } else if(l.id && String(l.id).indexOf("soup-today-") === 0){
       const s = soups.find(x=>x.name === l.name);
-      if(s) r = { id:s.id, name:s.name, details:"", nut:s.nut || null, note:l.note || "", price:s.price };
+      if(s && !s.soldOut) r = { id:s.id, name:s.name, details:"", nut:s.nut || null, note:l.note || "", price:s.price };
     } else if(l.id && menuMap[l.id]){
       const m = menuMap[l.id];
       r = { id:l.id, name:m.name, details:"", nut:m.nut, note:l.note || "", price:m.price };
@@ -2087,6 +2147,7 @@ function initCart(){
   function renderDailyBanner(){
     if(!banner) return;
     const soups = getTodaysSoups();
+    const soldOut = areSoupsSoldOut();
     banner.innerHTML = `
       <div class="stamp floaty">
         <span class="stamp-eyebrow">Днес е</span>
@@ -2095,6 +2156,7 @@ function initCart(){
       </div>
       <div class="daily-banner-text">
         <h3>Супа${soups.length>1?"и":""} на деня: ${soups.map(s=>escapeHtml(s.name)).join(" · ")}</h3>
+        ${soldOut ? `<p class="soup-soldout-note">Изчерпано количество</p>` : ""}
         <p style="margin-top:10px;">Разгледай <a href="menu.html" style="text-decoration:underline;">цялото меню</a> за всички салати, купи, бургери и напитки.</p>
       </div>
     `;
@@ -2116,25 +2178,26 @@ function initCart(){
   function applyOrderingWindow(){
     const now = new Date();
     const open = isOrderingOpenNow(now);
+    const pickup = getPickupOptions(now);
 
     if(timeInput){
       const previouslySelected = timeInput.value;
-      const slots = getAvailablePickupSlots(now);
+      const slots = pickup.options;
       const placeholder = `<option value="" disabled${previouslySelected ? "" : " selected"}>Избери час</option>`;
-      timeInput.innerHTML = placeholder + slots.map(t => `<option value="${t}">${t} ч.</option>`).join("");
+      timeInput.innerHTML = placeholder + slots.map(o => `<option value="${o.value}">${o.label}</option>`).join("");
       // Пазим избрания час, ако все още е валиден (напр. при опресняване на 30 сек.)
-      if(previouslySelected && slots.includes(previouslySelected)){
+      if(previouslySelected && slots.some(o => o.value === previouslySelected)){
         timeInput.value = previouslySelected;
       }
       timeInput.disabled = slots.length === 0;
     }
 
     if(closedNotice){
-      if(open){
+      if(pickup.mode === "now"){
         closedNotice.classList.add("hidden");
       } else {
         closedNotice.classList.remove("hidden");
-        if(closedText) closedText.textContent = getOrderingStatusMessage(now);
+        if(closedText) closedText.textContent = getPreorderNoticeText(pickup);
       }
     }
 
@@ -2147,6 +2210,7 @@ function initCart(){
   // без да е нужно да презареждаш страницата.
   setInterval(()=>{ applyOrderingWindow(); renderCart(); }, 30000);
 
+  const isSoupCartLine = (line) => String(line.id || "").indexOf("soup-today-") === 0;
   const reorderMount = document.getElementById("reorderMount");
   let reorderSuppressed = false; // след изпратена поръчка не предлагаме веднага същото
   function renderCart(){
@@ -2157,10 +2221,12 @@ function initCart(){
       cartEmpty.classList.remove("hidden");
     } else {
       cartEmpty.classList.add("hidden");
+      const soupsGone = areSoupsSoldOut();
       cartList.innerHTML = cart.map(line => `
         <div class="cart-line" data-cart-id="${line.cartId}">
           <div class="cart-line-info">
             <h4>${escapeHtml(line.name)}</h4>
+            ${soupsGone && isSoupCartLine(line) ? `<p class="cart-line-soldout">Изчерпано количество — премахни го, за да изпратиш поръчката.</p>` : ""}
             ${line.details ? `<p class="cart-line-details">${escapeHtml(line.details)}</p>` : ""}
             ${line.nut ? `<p class="cart-line-nut">≈ ${Math.round(line.nut.kcal)} kcal · Б ${Math.round(line.nut.p)} г · В ${Math.round(line.nut.c)} г · М ${Math.round(line.nut.f)} г</p>` : ""}
             ${line.note ? `<p class="cart-line-note">📝 Бележка: ${escapeHtml(line.note)}</p>` : ""}
@@ -2177,7 +2243,8 @@ function initCart(){
       `).join("");
     }
     cartTotalEl.textContent = fmt(cartTotal());
-    if(checkoutBtn) checkoutBtn.disabled = cart.length === 0 || !isOrderingOpenNow();
+    const soldOutSoupInCart = areSoupsSoldOut() && cart.some(isSoupCartLine);
+    if(checkoutBtn) checkoutBtn.disabled = cart.length === 0 || soldOutSoupInCart || getPickupOptions(new Date()).options.length === 0;
   }
 
   cartList.addEventListener("click", e=>{
@@ -2243,9 +2310,17 @@ function initCart(){
 
       const cart = getCart();
       if(cart.length === 0){ showToast("Количката е празна — добави продукти от менюто."); return; }
-      if(!isOrderingOpenNow()){
+      if(cart.some(isSoupCartLine)){
+        await pullSoupScheduleAndRefresh(); // свежа проверка, не само кешът на устройството
+        if(areSoupsSoldOut()){
+          renderCart();
+          showToast("Супите за днес са изчерпани — премахни ги от количката, за да изпратиш поръчката.");
+          return;
+        }
+      }
+      if(getPickupOptions(new Date()).options.length === 0){
         applyOrderingWindow();
-        showToast(getOrderingStatusMessage());
+        showToast("В момента няма свободен час за вземане. Опитай отново по-късно.");
         return;
       }
 
@@ -2277,6 +2352,7 @@ function initCart(){
   });
 
   initReorderStrip(reorderMount, { onAdded: renderCart });
+  window.addEventListener("vitamina:soups-updated", renderCart);
   renderCart();
 }
 
@@ -2461,12 +2537,34 @@ function initAdmin(){
     showToast(nowPaused ? "Поръчките са затворени за клиентите — менюто си остава видимо." : "Поръчките отново са отворени.");
   });
 
+  function renderSoupSoldOutUI(){
+    const statusEl = document.getElementById("soupSoldOutStatus");
+    const btn = document.getElementById("soupSoldOutToggle");
+    if(!statusEl || !btn) return;
+    const soldOut = areSoupsSoldOut();
+    statusEl.textContent = soldOut ? "Супите са ИЗЧЕРПАНИ за днес" : "Супите са налични";
+    statusEl.className = "status-pill " + (soldOut ? "status-delayed" : "status-done");
+    btn.textContent = soldOut ? "Пусни супите отново" : "Спри супите (изчерпано количество)";
+    btn.classList.toggle("btn-danger", !soldOut);
+    btn.classList.toggle("btn-primary", soldOut);
+  }
+  document.getElementById("soupSoldOutToggle")?.addEventListener("click", ()=>{
+    const nowSoldOut = !areSoupsSoldOut();
+    setSoupsSoldOut(nowSoldOut);
+    renderSoupSoldOutUI();
+    showToast(nowSoldOut
+      ? "Супите са отбелязани като изчерпани — клиентите виждат надпис „Изчерпано количество“."
+      : "Супите отново са налични за поръчка.");
+  });
+  window.addEventListener("vitamina:soups-updated", renderSoupSoldOutUI);
+
   function showPanel(){
     loginScreen.style.display = "none";
     panel.style.display = "block";
     renderOrdersTable();
     renderAppsTable();
     renderSoupAdmin();
+    renderSoupSoldOutUI();
     renderVisitorsAdmin();
     renderOrderingPauseUI();
     updatePrinterStatusUI();
@@ -2959,4 +3057,30 @@ document.addEventListener("DOMContentLoaded", ()=>{
   window.addEventListener("pageshow", (e)=>{
     if(e.persisted) pullSoupScheduleAndRefresh();
   });
+  /* iPhone не праща винаги "visibilitychange" (особено във вградените
+     браузъри на Facebook/Instagram и след заключване на екрана) и
+     прекъсва връзката за живо обновяване, когато страницата е на заден
+     план. Затова добавяме още сигнали: връщане на фокуса, възстановена
+     интернет връзка, докосване след дълго бездействие, както и проверка
+     на всеки 60 сек., докато страницата е отворена. */
+  window.addEventListener("focus", pullSoupScheduleAndRefresh);
+  window.addEventListener("online", pullSoupScheduleAndRefresh);
+  let lastTouchAt = Date.now();
+  ["touchstart","pointerdown","scroll"].forEach(evName=>{
+    window.addEventListener(evName, ()=>{
+      const now = Date.now();
+      if(now - lastTouchAt > 5 * 60 * 1000) pullSoupScheduleAndRefresh(); // първо докосване след 5+ мин. тишина
+      lastTouchAt = now;
+    }, { passive: true });
+  });
+  setInterval(()=>{
+    if(document.visibilityState !== "hidden") pullSoupScheduleAndRefresh();
+  }, 60 * 1000);
+  // Откриване на "събуждане": ако таймерът закъснее много, страницата е била замразена
+  let lastBeat = Date.now();
+  setInterval(()=>{
+    const now = Date.now();
+    if(now - lastBeat > 20 * 1000) pullSoupScheduleAndRefresh();
+    lastBeat = now;
+  }, 5000);
 });

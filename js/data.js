@@ -145,6 +145,71 @@ function getAvailablePickupSlots(date = new Date()){
   return slots;
 }
 
+/* Клиентът може да поръча и извън работното време (преди отваряне, след
+   затваряне или когато за днес вече няма свободни часове), но ЧАСЪТ за
+   вземане е винаги в работно време. Когато поръчва предварително (преди
+   отваряне или за следващия ден), най-ранният избираем час е толкова
+   минути след отварянето. */
+const EARLY_PICKUP_AFTER_OPEN_MINUTES = 15;
+
+/* Часове (на стъпки от TIME_SLOT_STEP_MINUTES) от earliestMin до
+   pickupCutoffMin, плюс точния краен час, ако не пада на стъпката. */
+function slotsBetween(earliestMin, pickupCutoffMin){
+  const earliest = Math.ceil(earliestMin / TIME_SLOT_STEP_MINUTES) * TIME_SLOT_STEP_MINUTES;
+  const slots = [];
+  for(let t = earliest; t <= pickupCutoffMin; t += TIME_SLOT_STEP_MINUTES){
+    slots.push(minutesToTimeStr(t));
+  }
+  if(earliest <= pickupCutoffMin){
+    const lastSlot = minutesToTimeStr(pickupCutoffMin);
+    if(slots[slots.length - 1] !== lastSlot) slots.push(lastSlot);
+  }
+  return slots;
+}
+
+/* Всички часове за вземане, които клиентът може да избере в момента.
+   mode:
+     "now"         — отворено е и има свободни часове днес (обичайният случай);
+     "before-open" — още не сме отворили днес: часове днес, но поне
+                     EARLY_PICKUP_AFTER_OPEN_MINUTES мин. след отваряне;
+     "next-day"    — за днес няма свободни часове (затворено или твърде късно):
+                     часове за следващия ден, със заглавие на деня в стойността
+                     (напр. "сряда 09:15"), за да е ясно за кога е поръчката. */
+function getPickupOptions(date = new Date()){
+  const w = getOrderingWindow(date);
+  const nowMin = date.getHours() * 60 + date.getMinutes();
+
+  if(nowMin >= w.openMin && nowMin <= w.cutoffMin){
+    const today = getAvailablePickupSlots(date);
+    if(today.length) return { mode:"now", options: today.map(t => ({ value:t, label:`${t} ч.` })) };
+  }
+
+  if(nowMin < w.openMin){
+    const earliest = Math.max(w.openMin + EARLY_PICKUP_AFTER_OPEN_MINUTES, nowMin + MIN_PICKUP_WAIT_MINUTES);
+    const slots = slotsBetween(earliest, w.pickupCutoffMin);
+    if(slots.length) return { mode:"before-open", options: slots.map(t => ({ value:t, label:`${t} ч.` })) };
+  }
+
+  const next = new Date(date);
+  next.setDate(next.getDate() + 1);
+  const nw = getOrderingWindow(next);
+  const dayName = WEEKDAY_NAMES[next.getDay()];
+  const slots = slotsBetween(nw.openMin + EARLY_PICKUP_AFTER_OPEN_MINUTES, nw.pickupCutoffMin);
+  return {
+    mode:"next-day", dayName,
+    options: slots.map(t => ({ value:`${dayName} ${t}`, label:`Утре (${dayName}) ${t} ч.` })),
+  };
+}
+function getPreorderNoticeText(info){
+  if(info.mode === "before-open"){
+    return "Все още не сме отворили, но можеш да поръчаш предварително — избери час за вземане, когато отворим.";
+  }
+  if(info.mode === "next-day"){
+    return `За днес вече няма свободни часове за вземане, но можеш да поръчаш предварително за утре (${info.dayName}) — избери час за вземане.`;
+  }
+  return "";
+}
+
 function formatWorkingHoursSchedule(){
   return WEEKDAY_NAMES.map((name, idx) => {
     const h = WORKING_HOURS[idx];

@@ -1082,3 +1082,18 @@ table.data-table tr:last-child td{ border-bottom:none; }
   .reorder-actions .btn{ flex:1; text-align:center; }
   .fav-chip-load{ max-width:170px; }
 }
+
+/* Супи: изчерпано количество */
+.soup-soldout-note{
+  display:inline-block; margin-top:6px; padding:3px 10px;
+  background:#fff3e0; color:#8a4b12; border-radius:999px;
+  font-size:0.8rem; font-weight:800;
+}
+.menu-item.sold-out .menu-item-photo,
+.menu-item.sold-out .img-placeholder{ opacity:0.55; }
+.menu-item.sold-out .price{ opacity:0.6; }
+.menu-item.sold-out [data-add]:disabled,
+#detailPanel [data-add-detail]:disabled{
+  opacity:1; background:#f3eadb; color:#8a4b12; border-color:#e5d3b3; cursor:not-allowed;
+}
+.cart-line-soldout{ margin-top:6px; font-size:0.82rem; font-weight:700; color:#a02020; }
